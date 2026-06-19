@@ -10,205 +10,298 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background: linear-gradient(145deg, #0f0c29, #302b63, #24243e);
+            font-family: -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 16px;
+            background: #0b0b1a;
         }
+
+        body.level-1 { background: linear-gradient(145deg, #0b0b1a, #1a1a3e); }
+        body.level-2 { background: linear-gradient(145deg, #1a0b2e, #2d1b4e); }
+        body.level-3 { background: linear-gradient(145deg, #0b1a2e, #1b3a5e); }
+        body.level-4 { background: linear-gradient(145deg, #1a0b1a, #4e1b3e); }
+        body.level-5 { background: linear-gradient(145deg, #0b1a0b, #1b4e2e); }
+
         .container {
             max-width: 400px;
             width: 100%;
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 42px;
-            padding: 24px 20px 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 28px 20px 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -8px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
             text-align: center;
+            transition: all 0.4s ease;
         }
+
         .avatar-wrapper {
             position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 20px;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 16px;
         }
+
+        .avatar-glow {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #667eea, #764ba2, #f093fb, #667eea);
+            opacity: 0.6;
+            filter: blur(12px);
+            animation: spinGlow 6s linear infinite;
+            transition: all 0.6s ease;
+        }
+
+        @keyframes spinGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .avatar {
+            position: relative;
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #2d2b55, #1a1a3e);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 80px;
+            font-size: 72px;
             user-select: none;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
-            border: 3px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            z-index: 2;
         }
-        .avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
+
+        .avatar.jump {
+            animation: jump 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+
+        @keyframes jump {
+            0% { transform: scale(1) rotate(0deg); }
+            30% { transform: scale(1.15) rotate(-6deg); }
+            60% { transform: scale(0.95) rotate(4deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
         .level-badge {
             position: absolute;
             bottom: 0;
             right: 0;
-            background: #ffd700;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
             color: #1a1a2e;
             font-weight: 800;
-            font-size: 16px;
-            padding: 6px 16px;
+            font-size: 14px;
+            padding: 5px 16px;
             border-radius: 40px;
-            border: 2px solid #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 20px 0 24px;
-            gap: 8px;
-        }
-        .stat-item {
-            background: rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 12px 8px;
-            flex: 1;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .stat-item .label {
-            font-size: 12px;
-            color: #aaa;
-            text-transform: uppercase;
+            border: 2px solid rgba(255,255,255,0.8);
+            box-shadow: 0 4px 16px rgba(255,215,0,0.4);
+            z-index: 3;
             letter-spacing: 0.5px;
         }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+            margin: 16px 0 20px;
+        }
+
+        .stat-item {
+            flex: 1;
+            background: rgba(255,255,255,0.06);
+            border-radius: 20px;
+            padding: 12px 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(4px);
+        }
+
+        .stat-item .label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
         .stat-item .value {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
             color: #fff;
-            margin-top: 4px;
+            margin-top: 2px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
+        .progress-wrapper {
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 40px;
+            padding: 4px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 40px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 20px rgba(102,126,234,0.3);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 6px;
+            padding: 0 4px;
+        }
+
         .habits {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin: 20px 0;
+            gap: 10px;
+            margin: 16px 0 12px;
         }
+
         .habit {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.04);
             padding: 14px 18px;
             border-radius: 18px;
-            border: 1px solid rgba(255,255,255,0.06);
-            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.25s ease;
             cursor: pointer;
             color: #fff;
+            backdrop-filter: blur(4px);
         }
-        .habit:active {
-            transform: scale(0.97);
-            background: rgba(255,255,255,0.12);
-        }
+
+        .habit:active { transform: scale(0.96); }
+
         .habit .emoji {
-            font-size: 28px;
+            font-size: 26px;
             margin-right: 14px;
+            filter: drop-shadow(0 0 6px rgba(255,255,255,0.1));
         }
+
         .habit .name {
             flex: 1;
             text-align: left;
             font-weight: 500;
+            font-size: 15px;
+            color: rgba(255,255,255,0.85);
         }
+
         .habit .check {
             width: 28px;
             height: 28px;
             border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.15);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
-            font-size: 16px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: transparent;
+            background: rgba(255,255,255,0.03);
         }
+
+        .habit.done {
+            opacity: 0.6;
+            border-color: rgba(74,222,128,0.2);
+            background: rgba(74,222,128,0.05);
+        }
+
         .habit.done .check {
             background: #4ade80;
             border-color: #4ade80;
-            color: #1a1a2e;
+            color: #0b0b1a;
+            box-shadow: 0 0 20px rgba(74,222,128,0.3);
         }
-        .habit.done {
-            opacity: 0.7;
-        }
+
         .habit.done .name {
             text-decoration: line-through;
+            color: rgba(255,255,255,0.4);
         }
+
+        /* ===== ШАГИ ===== */
         .steps-block {
-            background: rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.04);
             border-radius: 20px;
             padding: 16px 18px;
-            margin: 12px 0;
-            border: 1px solid rgba(255,255,255,0.06);
+            margin: 8px 0 12px;
+            border: 1px solid rgba(255,255,255,0.05);
             text-align: left;
         }
-        .steps-block .steps-header {
+
+        .steps-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 12px;
-            color: #fff;
+            margin-bottom: 10px;
+            color: rgba(255,255,255,0.85);
             font-weight: 500;
             font-size: 15px;
         }
-        .steps-block .steps-header .emoji {
-            font-size: 26px;
-        }
+
+        .steps-header .emoji { font-size: 24px; }
+
         .steps-count {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: #fff;
             margin-bottom: 4px;
             text-align: center;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .steps-count span {
-            font-size: 14px;
-            font-weight: 400;
-            color: #aaa;
-            margin-left: 6px;
-        }
+
         .steps-goal-label {
             font-size: 12px;
             color: rgba(255,255,255,0.4);
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
-        .steps-goal-label b {
-            color: rgba(255,255,255,0.7);
-        }
-        .progress-bar-wrap {
+
+        .steps-goal-label b { color: rgba(255,255,255,0.7); }
+
+        .steps-progress-wrap {
             background: rgba(255,255,255,0.08);
             border-radius: 99px;
-            height: 10px;
-            margin-bottom: 14px;
+            height: 8px;
+            margin-bottom: 12px;
             overflow: hidden;
         }
-        .progress-bar-fill {
+
+        .steps-progress-fill {
             height: 100%;
             border-radius: 99px;
             background: linear-gradient(90deg, #667eea, #4ade80);
-            transition: width 0.4s ease;
+            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+
         .steps-input-row {
             display: flex;
             gap: 8px;
         }
+
         .steps-input-row input {
             flex: 1;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
             padding: 10px 14px;
             color: #fff;
@@ -216,9 +309,9 @@
             outline: none;
             -webkit-appearance: none;
         }
-        .steps-input-row input::placeholder {
-            color: rgba(255,255,255,0.35);
-        }
+
+        .steps-input-row input::placeholder { color: rgba(255,255,255,0.3); }
+
         .steps-input-row button {
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
@@ -230,43 +323,96 @@
             cursor: pointer;
             transition: opacity 0.2s;
         }
-        .steps-input-row button:active {
-            opacity: 0.8;
-        }
-        .footer {
-            margin-top: 20px;
-            color: rgba(255,255,255,0.3);
-            font-size: 13px;
-        }
-        .telegram-watermark {
+
+        .steps-input-row button:active { opacity: 0.8; }
+
+        /* ===== TOAST ===== */
+        .toast {
             position: fixed;
-            bottom: 10px;
-            left: 0;
-            right: 0;
-            text-align: center;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0px);
+            opacity: 1;
+        }
+
+        #confettiCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .footer {
+            margin-top: 16px;
+            color: rgba(255,255,255,0.15);
             font-size: 12px;
-            color: rgba(255,255,255,0.08);
+            letter-spacing: 1px;
             font-weight: 300;
-            letter-spacing: 2px;
+        }
+
+        .footer span {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        @media (max-width: 400px) {
+            .avatar-wrapper { width: 110px; height: 110px; }
+            .avatar { font-size: 56px; }
+            .habit { padding: 12px 14px; }
+            .stat-item .value { font-size: 22px; }
         }
     </style>
 </head>
 <body>
 
+<canvas id="confettiCanvas"></canvas>
+<div class="toast" id="toast">🔥 +1 Сила!</div>
+
 <div class="container">
+
     <div class="avatar-wrapper">
+        <div class="avatar-glow" id="glow"></div>
         <div class="avatar" id="avatar">🧑</div>
-        <div class="level-badge" id="levelBadge">Уровень 1</div>
+        <div class="level-badge" id="levelBadge">Ур. 1</div>
     </div>
 
     <div class="stats">
         <div class="stat-item">
-            <div class="label">Сила</div>
+            <div class="label">💪 Сила</div>
             <div class="value" id="fitness">0</div>
         </div>
         <div class="stat-item">
-            <div class="label">Прогресс</div>
-            <div class="value" id="progress">0</div>
+            <div class="label">⭐ Уровень</div>
+            <div class="value" id="levelDisplay">1</div>
+        </div>
+    </div>
+
+    <div class="progress-wrapper">
+        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-label">
+            <span>Прогресс</span>
+            <span id="progressText">0 / 10</span>
         </div>
     </div>
 
@@ -303,10 +449,10 @@
             <span class="emoji">👟</span>
             <span>Шаги за сегодня</span>
         </div>
-        <div class="steps-count" id="stepsCount">0 <span>шагов</span></div>
+        <div class="steps-count" id="stepsCount">0</div>
         <div class="steps-goal-label" id="stepsGoalLabel">Цель: <b>10 000</b> шагов</div>
-        <div class="progress-bar-wrap">
-            <div class="progress-bar-fill" id="stepsProgressBar" style="width:0%"></div>
+        <div class="steps-progress-wrap">
+            <div class="steps-progress-fill" id="stepsProgressBar" style="width:0%"></div>
         </div>
         <div class="steps-input-row">
             <input type="number" id="stepsInput" placeholder="Введите шаги..." min="0" max="999999" />
@@ -314,10 +460,8 @@
         </div>
     </div>
 
-    <div class="footer">PulseU — твой цифровой двойник</div>
+    <div class="footer">⚡ <span>PulseU</span> · твой цифровой двойник</div>
 </div>
-
-<div class="telegram-watermark">⚡ PULSEU</div>
 
 <script>
     const STEPS_GOAL = 10000;
@@ -326,6 +470,7 @@
         fitness: 0,
         level: 1,
         steps: 0,
+        lastResetDate: null,
         habits: {
             pushups: false,
             water: false,
@@ -334,6 +479,16 @@
             shower: false
         }
     };
+
+    const avatar = document.getElementById('avatar');
+    const glow = document.getElementById('glow');
+    const levelBadge = document.getElementById('levelBadge');
+    const levelDisplay = document.getElementById('levelDisplay');
+    const fitnessEl = document.getElementById('fitness');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const toast = document.getElementById('toast');
+    const body = document.body;
 
     function getTodayDate() {
         return new Date().toISOString().slice(0, 10);
@@ -353,7 +508,7 @@
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                state = parsed;
+                state = { ...state, ...parsed };
             } catch(e) {}
         }
         resetHabitsIfNewDay();
@@ -369,46 +524,117 @@
         const now = new Date();
         const midnight = new Date();
         midnight.setHours(24, 0, 0, 0);
-        const msUntilMidnight = midnight - now;
         setTimeout(() => {
             resetHabitsIfNewDay();
             render();
             scheduleMidnightReset();
-        }, msUntilMidnight);
+        }, midnight - now);
     }
 
+    // --- КОНФЕТТИ ---
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let confettiPieces = [];
+    let confettiRunning = false;
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function launchConfetti() {
+        const colors = ['#f7971e','#ffd200','#4ade80','#667eea','#f093fb','#f5576c','#00f2fe'];
+        for (let i = 0; i < 80; i++) {
+            confettiPieces.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                w: Math.random() * 8 + 4,
+                h: Math.random() * 6 + 3,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                vx: (Math.random() - 0.5) * 4,
+                vy: Math.random() * 4 + 2,
+                rot: Math.random() * 360,
+                rv: (Math.random() - 0.5) * 6
+            });
+        }
+        if (!confettiRunning) {
+            confettiRunning = true;
+            requestAnimationFrame(drawConfetti);
+        }
+    }
+
+    function drawConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let p of confettiPieces) {
+            p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.rot += p.rv;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rot * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.shadowColor = p.color;
+            ctx.shadowBlur = 8;
+            ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+            ctx.restore();
+        }
+        confettiPieces = confettiPieces.filter(p => p.y < canvas.height + 20);
+        if (confettiPieces.length > 0) {
+            requestAnimationFrame(drawConfetti);
+        } else {
+            confettiRunning = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
+    // --- TOAST ---
+    let toastTimeout;
+    function showToast(text) {
+        toast.textContent = text;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => toast.classList.remove('show'), 1200);
+    }
+
+    // --- РЕНДЕР ---
     function render() {
-        document.getElementById('fitness').textContent = state.fitness;
-        document.getElementById('levelBadge').textContent = `Уровень ${state.level}`;
+        fitnessEl.textContent = state.fitness;
+        levelDisplay.textContent = state.level;
+        levelBadge.textContent = `Ур. ${state.level}`;
 
         const progress = state.fitness % 10;
-        document.getElementById('progress').textContent = `${progress}/10`;
+        progressBar.style.width = (progress / 10 * 100) + '%';
+        progressText.textContent = `${progress} / 10`;
 
-        const avatarEl = document.getElementById('avatar');
-        if (state.level >= 5) {
-            avatarEl.textContent = '🦸';
-            avatarEl.style.background = 'linear-gradient(135deg, #f093fb, #f5576c)';
-        } else if (state.level >= 3) {
-            avatarEl.textContent = '💪';
-            avatarEl.style.background = 'linear-gradient(135deg, #4facfe, #00f2fe)';
+        const lvl = state.level;
+        body.className = `level-${Math.min(lvl, 5)}`;
+
+        if (lvl >= 8) {
+            avatar.textContent = '👑';
+            avatar.style.background = 'linear-gradient(135deg, #f7971e, #ffd200)';
+            glow.style.background = 'conic-gradient(from 0deg, #f7971e, #ffd200, #f7971e)';
+        } else if (lvl >= 5) {
+            avatar.textContent = '🦸';
+            avatar.style.background = 'linear-gradient(135deg, #f093fb, #f5576c)';
+            glow.style.background = 'conic-gradient(from 0deg, #f093fb, #f5576c, #f093fb)';
+        } else if (lvl >= 3) {
+            avatar.textContent = '💪';
+            avatar.style.background = 'linear-gradient(135deg, #4facfe, #00f2fe)';
+            glow.style.background = 'conic-gradient(from 0deg, #4facfe, #00f2fe, #4facfe)';
         } else {
-            avatarEl.textContent = '🧑';
-            avatarEl.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+            avatar.textContent = '🧑';
+            avatar.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+            glow.style.background = 'conic-gradient(from 0deg, #667eea, #764ba2, #667eea)';
         }
 
         document.querySelectorAll('.habit').forEach(el => {
             const habitName = el.dataset.habit;
-            if (state.habits[habitName]) {
-                el.classList.add('done');
-            } else {
-                el.classList.remove('done');
-            }
+            el.classList.toggle('done', !!state.habits[habitName]);
         });
 
         const steps = state.steps || 0;
         const pct = Math.min(100, Math.round((steps / STEPS_GOAL) * 100));
-        const stepsEl = document.getElementById('stepsCount');
-        stepsEl.innerHTML = `${steps.toLocaleString('ru-RU')} <span>шагов</span>`;
+        document.getElementById('stepsCount').textContent = steps.toLocaleString('ru-RU');
         document.getElementById('stepsProgressBar').style.width = pct + '%';
         const goalLabel = document.getElementById('stepsGoalLabel');
         if (steps >= STEPS_GOAL) {
@@ -420,20 +646,7 @@
         saveState();
     }
 
-    function saveSteps() {
-        const input = document.getElementById('stepsInput');
-        const val = parseInt(input.value, 10);
-        if (isNaN(val) || val < 0) return;
-        state.steps = val;
-        input.value = '';
-        input.blur();
-        render();
-    }
-
-    document.getElementById('stepsInput').addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') saveSteps();
-    });
-
+    // --- ПРИВЫЧКИ ---
     document.querySelectorAll('.habit').forEach(el => {
         el.addEventListener('click', function() {
             const habitName = this.dataset.habit;
@@ -442,16 +655,37 @@
             state.habits[habitName] = true;
             state.fitness += 1;
 
+            avatar.classList.remove('jump');
+            void avatar.offsetWidth;
+            avatar.classList.add('jump');
+
+            showToast('🔥 +1 Сила!');
+
             const newLevel = Math.floor(state.fitness / 10) + 1;
             if (newLevel > state.level) {
                 state.level = newLevel;
-                const avatar = document.getElementById('avatar');
-                avatar.style.transform = 'scale(1.3)';
-                setTimeout(() => { avatar.style.transform = 'scale(1)'; }, 300);
+                launchConfetti();
+                showToast(`🎉 УРОВЕНЬ ${newLevel}!`);
             }
 
             render();
         });
+    });
+
+    // --- ШАГИ ---
+    function saveSteps() {
+        const input = document.getElementById('stepsInput');
+        const val = parseInt(input.value, 10);
+        if (isNaN(val) || val < 0) return;
+        state.steps = val;
+        input.value = '';
+        input.blur();
+        if (val >= STEPS_GOAL) showToast('🎉 Цель по шагам!');
+        render();
+    }
+
+    document.getElementById('stepsInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') saveSteps();
     });
 
     loadState();

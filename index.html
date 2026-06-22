@@ -201,6 +201,188 @@
             color: rgba(255,255,255,0.4);
         }
 
+        /* ===== МОИ КОМАНДЫ ===== */
+        .team-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .team-action-btn {
+            flex: 1;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .team-action-btn .btn-icon { font-size: 20px; }
+        .team-action-btn.create { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .team-action-btn.join-code { background: linear-gradient(135deg, #11998e, #38ef7d); color: #0f0f1a; }
+        .team-action-btn:active { opacity: 0.8; }
+
+        .join-code-form {
+            display: none;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .join-code-form.visible { display: block; }
+
+        .join-code-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .join-code-input {
+            flex: 1;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            outline: none;
+        }
+
+        .join-code-input::placeholder { letter-spacing: 0; font-weight: 400; color: rgba(255,255,255,0.3); }
+        .join-code-input:focus { border-color: rgba(99,102,241,0.6); }
+
+        .join-code-go {
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 10px 16px;
+            cursor: pointer;
+        }
+
+        .my-teams-empty {
+            text-align: center;
+            padding: 20px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 14px;
+            border: 1px dashed rgba(255,255,255,0.08);
+        }
+
+        .my-teams-empty .empty-icon { font-size: 36px; margin-bottom: 8px; }
+        .my-teams-empty .empty-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .my-teams-empty .empty-sub { font-size: 12px; color: rgba(255,255,255,0.3); }
+
+        .team-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .team-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .team-card-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .team-card-meta {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            margin-top: 2px;
+        }
+
+        .team-card-code {
+            font-size: 12px;
+            font-weight: 700;
+            color: #a5b4fc;
+            background: rgba(165,180,252,0.1);
+            border-radius: 8px;
+            padding: 4px 10px;
+            cursor: pointer;
+            letter-spacing: 1px;
+        }
+
+        .member-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .member-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .member-rank {
+            width: 26px;
+            font-size: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .member-info { flex: 1; min-width: 0; }
+
+        .member-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .member-sub {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            margin-top: 1px;
+        }
+
+        .member-streak {
+            font-size: 13px;
+            font-weight: 800;
+            color: #f97316;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .invite-hint {
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+            text-align: center;
+            padding: 10px 0 0;
+        }
+
         /* ===== ШАПКА ===== */
         .header {
             display: flex;
@@ -1213,12 +1395,43 @@
 
     <div class="community-header">
         <div class="community-title">🤝 Сообщество</div>
-        <div class="community-sub">Вступай в группы по интересам и развивайся вместе</div>
+        <div class="community-sub">Команды, прогресс и группы по интересам</div>
     </div>
 
-    <!-- МОИ ГРУППЫ -->
-    <div class="my-groups-section">
-        <div class="section-label">Мои группы</div>
+    <!-- МОИ КОМАНДЫ -->
+    <div class="section-label">Мои команды</div>
+
+    <!-- Кнопки действий -->
+    <div class="team-actions">
+        <button class="team-action-btn create" onclick="openCreateTeam()">
+            <span class="btn-icon">➕</span>Создать команду
+        </button>
+        <button class="team-action-btn join-code" onclick="toggleJoinCodeForm()">
+            <span class="btn-icon">🔗</span>Войти по коду
+        </button>
+    </div>
+
+    <!-- Форма входа по коду -->
+    <div class="join-code-form" id="joinCodeForm">
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:10px;">Введи 6-значный код от создателя команды:</div>
+        <div class="join-code-row">
+            <input class="join-code-input" id="joinCodeInput" maxlength="6" placeholder="ABC123" oninput="this.value=this.value.toUpperCase()"/>
+            <button class="join-code-go" onclick="doJoinByCode()">Войти →</button>
+        </div>
+    </div>
+
+    <!-- Список своих команд -->
+    <div id="myTeamsWrap">
+        <div class="my-teams-empty">
+            <div class="empty-icon">👥</div>
+            <div class="empty-title">Команд пока нет</div>
+            <div class="empty-sub">Создай команду и пригласи друзей или тренера</div>
+        </div>
+    </div>
+
+    <!-- МОИ ГРУППЫ (по интересам) -->
+    <div class="my-groups-section" style="margin-top:22px;">
+        <div class="section-label">Подписки на группы</div>
         <div id="myGroupsWrap">
             <div class="my-groups-empty">Ты ещё не вступил ни в одну группу</div>
         </div>
@@ -1809,6 +2022,7 @@ load();
 loadProfile();
 renderProfile();
 render();
+loadTeams();
 
 // =============================================
 //  СООБЩЕСТВО
@@ -1929,17 +2143,204 @@ function renderCommunity() {
     `).join('');
 }
 
+// =============================================
+//  МОИ КОМАНДЫ
+// =============================================
+
+const TEAMS_KEY = 'twinner_teams';
+const TEAM_AVATARS = ['🧑','👩','👨','🧑‍💻','👩‍💻','👨‍💻','🧑‍🎓','👩‍🎓','👨‍🎓','🏋️','🧘','🏃','🚴','🤸','🧗'];
+const TEAM_COLORS  = ['#667eea','#f97316','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899'];
+
+let myTeams = [];   // [{code, name, isCreator, members:[{name,streak,checkins,avatar,color}]}]
+
+function loadTeams() {
+    try {
+        myTeams = JSON.parse(localStorage.getItem(TEAMS_KEY) || '[]');
+    } catch(e) { myTeams = []; }
+}
+
+function saveTeams() {
+    localStorage.setItem(TEAMS_KEY, JSON.stringify(myTeams));
+}
+
+function getBotUsername() {
+    // Попытка получить из Telegram WebApp, иначе — плейсхолдер
+    return 'Twinner_habit_bot';
+}
+
+/* ── Показать/скрыть форму ввода кода ── */
+function toggleJoinCodeForm() {
+    const form = document.getElementById('joinCodeForm');
+    form.classList.toggle('visible');
+    if (form.classList.contains('visible')) {
+        document.getElementById('joinCodeInput').focus();
+    }
+}
+
+/* ── Вступить по коду (открывает бот) ── */
+function doJoinByCode() {
+    const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+    if (code.length < 4) { showToast('Введи код (6 символов)'); return; }
+    const botUrl = `https://t.me/${getBotUsername()}?start=joingroup_${code}`;
+    window.open(botUrl, '_blank');
+    document.getElementById('joinCodeForm').classList.remove('visible');
+    document.getElementById('joinCodeInput').value = '';
+    showToast('Открываем бота для входа в команду…');
+}
+
+/* ── Скопировать код команды ── */
+function copyTeamCode(code) {
+    navigator.clipboard?.writeText(code).catch(() => {});
+    showToast(`Код ${code} скопирован!`);
+}
+
+/* ── Добавить демо-участника (для тестирования) ── */
+function addDemoMember(teamIdx) {
+    const names = ['Макс','Катя','Серёжа','Аня','Дима','Лена','Артём','Маша','Вася','Юля'];
+    const team  = myTeams[teamIdx];
+    if (!team) return;
+    const used  = team.members.map(m => m.name);
+    const avail = names.filter(n => !used.includes(n));
+    if (!avail.length) { showToast('Достаточно участников!'); return; }
+    const n = avail[Math.floor(Math.random() * avail.length)];
+    team.members.push({
+        name:    n,
+        streak:  Math.floor(Math.random() * 30),
+        checkins:Math.floor(Math.random() * 60),
+        avatar:  TEAM_AVATARS[Math.floor(Math.random() * TEAM_AVATARS.length)],
+        color:   TEAM_COLORS[Math.floor(Math.random() * TEAM_COLORS.length)],
+        isMe:    false,
+    });
+    saveTeams();
+    renderMyTeams();
+}
+
+/* ── Удалить команду ── */
+function deleteTeam(idx) {
+    if (!confirm('Удалить команду?')) return;
+    myTeams.splice(idx, 1);
+    saveTeams();
+    renderMyTeams();
+    showToast('Команда удалена');
+}
+
+/* ── Создать демо-команду локально ── */
+function createDemoTeam(name) {
+    // Получаем текущую серию пользователя из данных
+    const s = load_state_raw();
+    let myStreak = 0;
+    if (s && s.checkins) {
+        myStreak = s.checkins.filter(d => {
+            const days = (new Date() - new Date(d)) / 864e5;
+            return days <= 30;
+        }).length;
+    }
+
+    const code = Array.from({length:6}, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+    myTeams.push({
+        code,
+        name: name || 'Моя команда',
+        isCreator: true,
+        created: new Date().toISOString().slice(0,10),
+        members: [{
+            name:     profile.name || 'Ты',
+            streak:   myStreak,
+            checkins: myStreak,
+            avatar:   '⚡',
+            color:    '#667eea',
+            isMe:     true,
+        }]
+    });
+    saveTeams();
+    renderMyTeams();
+}
+
+function load_state_raw() {
+    try { return JSON.parse(localStorage.getItem('twinner_v2') || 'null'); } catch(e) { return null; }
+}
+
+/* ── Рендер моих команд ── */
+function renderMyTeams() {
+    const wrap = document.getElementById('myTeamsWrap');
+    if (!myTeams.length) {
+        wrap.innerHTML = `<div class="my-teams-empty">
+            <div class="empty-icon">👥</div>
+            <div class="empty-title">Команд пока нет</div>
+            <div class="empty-sub">Создай команду через бота — получишь код для приглашения друзей</div>
+        </div>`;
+        return;
+    }
+
+    const medals = ['🥇','🥈','🥉'];
+    wrap.innerHTML = myTeams.map((team, idx) => {
+        // Сортировка участников по серии
+        const sorted = [...team.members].sort((a,b) => (b.streak - a.streak) || (b.checkins - a.checkins));
+        const rows = sorted.map((m, i) => {
+            const medal  = medals[i] || `${i+1}.`;
+            const bgCss  = `background:${m.color}22;`;
+            return `<div class="member-row">
+                <div class="member-rank">${medal}</div>
+                <div class="member-avatar" style="${bgCss}">${m.avatar}</div>
+                <div class="member-info">
+                    <div class="member-name">${m.name}${m.isMe ? ' <span style="font-size:10px;color:#a5b4fc;">ты</span>' : ''}</div>
+                    <div class="member-sub">✅ ${m.checkins} чекинов</div>
+                </div>
+                <div class="member-streak">🔥 ${m.streak}<span style="font-size:10px;font-weight:400;color:rgba(255,255,255,0.35);margin-left:2px;">дн</span></div>
+            </div>`;
+        }).join('');
+
+        const inviteLink = `https://t.me/${getBotUsername()}?start=joingroup_${team.code}`;
+
+        return `<div class="team-card">
+            <div class="team-card-header">
+                <div>
+                    <div class="team-card-name">👥 ${team.name}</div>
+                    <div class="team-card-meta">${team.members.length} участн. · создана ${team.created || '—'}</div>
+                </div>
+                <div class="team-card-code" onclick="copyTeamCode('${team.code}')" title="Нажми чтобы скопировать">${team.code}</div>
+            </div>
+            ${rows}
+            <div class="invite-hint">
+                <a href="${inviteLink}" target="_blank" style="color:#a5b4fc;text-decoration:none;">🔗 Ссылка для приглашения</a>
+                &nbsp;·&nbsp;
+                <span onclick="addDemoMember(${idx})" style="cursor:pointer;color:rgba(255,255,255,0.4);">+ тест</span>
+                &nbsp;·&nbsp;
+                <span onclick="deleteTeam(${idx})" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+/* ── Перехватить создание команды: если нет бота — создаём локально ── */
+function openCreateTeam() {
+    const name = prompt('Название команды:');
+    if (!name || !name.trim()) return;
+    const n = name.trim();
+
+    // Если мы внутри Telegram WebApp — открываем бота
+    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+        const botUrl = `https://t.me/${getBotUsername()}`;
+        window.open(botUrl, '_blank');
+        showToast(`Напиши боту: /newgroup ${n}`);
+    } else {
+        // Вне Telegram — создаём локально (демо-режим)
+        createDemoTeam(n);
+        showToast(`Команда «${n}» создана!`);
+    }
+}
+
 // ===== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК =====
 function switchTab(name) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     document.getElementById('tab-btn-' + name).classList.add('active');
-    if (name === 'community') renderCommunity();
+    if (name === 'community') { renderCommunity(); renderMyTeams(); }
     window.scrollTo(0, 0);
 }
 
 loadJoined();
+renderMyTeams();
 </script>
 </body>
 </html>

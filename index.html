@@ -2204,121 +2204,122 @@ function copyTeamCode(code) {
     showToast(`Код ${code} скопирован!`);
 }
 
-/* ── Добавить демо-участника (для тестирования) ── */
+/* ── Добавить тестового участника ── */
 function addDemoMember(teamIdx) {
-    const names = ['Макс','Катя','Серёжа','Аня','Дима','Лена','Артём','Маша','Вася','Юля'];
-    const team  = myTeams[teamIdx];
+    var names = ['Макс','Катя','Серёжа','Аня','Дима','Лена','Артём','Маша','Вася','Юля'];
+    var team = myTeams[teamIdx];
     if (!team) return;
-    const used  = team.members.map(m => m.name);
-    const avail = names.filter(n => !used.includes(n));
+    var used = team.members.map(function(m){ return m.name; });
+    var avail = names.filter(function(n){ return used.indexOf(n) === -1; });
     if (!avail.length) { showToast('Достаточно участников!'); return; }
-    const n = avail[Math.floor(Math.random() * avail.length)];
+    var n = avail[Math.floor(Math.random() * avail.length)];
     team.members.push({
-        name:    n,
-        streak:  Math.floor(Math.random() * 30),
-        checkins:Math.floor(Math.random() * 60),
-        avatar:  TEAM_AVATARS[Math.floor(Math.random() * TEAM_AVATARS.length)],
-        color:   TEAM_COLORS[Math.floor(Math.random() * TEAM_COLORS.length)],
-        isMe:    false,
+        name:     n,
+        streak:   Math.floor(Math.random() * 25),
+        checkins: Math.floor(Math.random() * 50) + 5,
+        avatar:   TEAM_AVATARS[Math.floor(Math.random() * TEAM_AVATARS.length)],
+        color:    TEAM_COLORS[Math.floor(Math.random() * TEAM_COLORS.length)],
+        isMe:     false
     });
     saveTeams();
     renderMyTeams();
+    showToast(n + ' добавлен в команду');
 }
 
 /* ── Удалить команду ── */
 function deleteTeam(idx) {
-    if (!confirm('Удалить команду?')) return;
     myTeams.splice(idx, 1);
     saveTeams();
     renderMyTeams();
     showToast('Команда удалена');
 }
 
-/* ── Создать демо-команду локально ── */
+/* ── Создать команду локально ── */
 function createDemoTeam(name) {
-    // Получаем текущую серию пользователя из данных
-    const s = load_state_raw();
-    let myStreak = 0;
-    if (s && s.checkins) {
-        myStreak = s.checkins.filter(d => {
-            const days = (new Date() - new Date(d)) / 864e5;
-            return days <= 30;
-        }).length;
-    }
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var code = '';
+    for (var i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
 
-    const code = Array.from({length:6}, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+    var myName = 'Ты';
+    try { myName = (profile && profile.name) ? profile.name : 'Ты'; } catch(e) {}
+
+    var today = new Date().toISOString().slice(0, 10);
     myTeams.push({
-        code,
-        name: name || 'Моя команда',
+        code:      code,
+        name:      name,
         isCreator: true,
-        created: new Date().toISOString().slice(0,10),
-        members: [{
-            name:     profile.name || 'Ты',
-            streak:   myStreak,
-            checkins: myStreak,
+        created:   today,
+        members:   [{
+            name:     myName,
+            streak:   0,
+            checkins: 0,
             avatar:   '⚡',
             color:    '#667eea',
-            isMe:     true,
+            isMe:     true
         }]
     });
     saveTeams();
     renderMyTeams();
 }
 
-function load_state_raw() {
-    try { return JSON.parse(localStorage.getItem('twinner_v2') || 'null'); } catch(e) { return null; }
-}
-
 /* ── Рендер моих команд ── */
 function renderMyTeams() {
-    const wrap = document.getElementById('myTeamsWrap');
-    if (!myTeams.length) {
-        wrap.innerHTML = `<div class="my-teams-empty">
-            <div class="empty-icon">👥</div>
-            <div class="empty-title">Команд пока нет</div>
-            <div class="empty-sub">Создай команду через бота — получишь код для приглашения друзей</div>
-        </div>`;
+    var wrap = document.getElementById('myTeamsWrap');
+    if (!wrap) return;
+
+    if (!myTeams || !myTeams.length) {
+        wrap.innerHTML = '<div class="my-teams-empty"><div class="empty-icon">👥</div><div class="empty-title">Команд пока нет</div><div class="empty-sub">Нажми «Создать команду», введи название и нажми «Создать →»</div></div>';
         return;
     }
 
-    const medals = ['🥇','🥈','🥉'];
-    wrap.innerHTML = myTeams.map((team, idx) => {
-        // Сортировка участников по серии
-        const sorted = [...team.members].sort((a,b) => (b.streak - a.streak) || (b.checkins - a.checkins));
-        const rows = sorted.map((m, i) => {
-            const medal  = medals[i] || `${i+1}.`;
-            const bgCss  = `background:${m.color}22;`;
-            return `<div class="member-row">
-                <div class="member-rank">${medal}</div>
-                <div class="member-avatar" style="${bgCss}">${m.avatar}</div>
-                <div class="member-info">
-                    <div class="member-name">${m.name}${m.isMe ? ' <span style="font-size:10px;color:#a5b4fc;">ты</span>' : ''}</div>
-                    <div class="member-sub">✅ ${m.checkins} чекинов</div>
-                </div>
-                <div class="member-streak">🔥 ${m.streak}<span style="font-size:10px;font-weight:400;color:rgba(255,255,255,0.35);margin-left:2px;">дн</span></div>
-            </div>`;
-        }).join('');
+    var medals = ['🥇','🥈','🥉'];
+    var html = '';
 
-        const inviteLink = `https://t.me/${getBotUsername()}?start=joingroup_${team.code}`;
+    for (var idx = 0; idx < myTeams.length; idx++) {
+        var team = myTeams[idx];
+        var members = team.members || [];
+        var sorted = members.slice().sort(function(a, b) {
+            return (b.streak - a.streak) || (b.checkins - a.checkins);
+        });
 
-        return `<div class="team-card">
-            <div class="team-card-header">
-                <div>
-                    <div class="team-card-name">👥 ${team.name}</div>
-                    <div class="team-card-meta">${team.members.length} участн. · создана ${team.created || '—'}</div>
-                </div>
-                <div class="team-card-code" onclick="copyTeamCode('${team.code}')" title="Нажми чтобы скопировать">${team.code}</div>
-            </div>
-            ${rows}
-            <div class="invite-hint">
-                <a href="${inviteLink}" target="_blank" style="color:#a5b4fc;text-decoration:none;">🔗 Ссылка для приглашения</a>
-                &nbsp;·&nbsp;
-                <span onclick="addDemoMember(${idx})" style="cursor:pointer;color:rgba(255,255,255,0.4);">+ тест</span>
-                &nbsp;·&nbsp;
-                <span onclick="deleteTeam(${idx})" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span>
-            </div>
-        </div>`;
-    }).join('');
+        var rows = '';
+        for (var i = 0; i < sorted.length; i++) {
+            var m = sorted[i];
+            var medal = i < 3 ? medals[i] : (i + 1) + '.';
+            var meTag = m.isMe ? ' <span style="font-size:10px;color:#a5b4fc;">ты</span>' : '';
+            rows += '<div class="member-row">'
+                + '<div class="member-rank">' + medal + '</div>'
+                + '<div class="member-avatar" style="background:' + m.color + '22;">' + m.avatar + '</div>'
+                + '<div class="member-info">'
+                +   '<div class="member-name">' + m.name + meTag + '</div>'
+                +   '<div class="member-sub">✅ ' + m.checkins + ' чекинов</div>'
+                + '</div>'
+                + '<div class="member-streak">🔥 ' + m.streak + ' <span style="font-size:10px;font-weight:400;color:rgba(255,255,255,0.35);">дн</span></div>'
+                + '</div>';
+        }
+
+        var inviteLink = 'https://t.me/' + getBotUsername() + '?start=joingroup_' + team.code;
+
+        html += '<div class="team-card">'
+            + '<div class="team-card-header">'
+            +   '<div>'
+            +     '<div class="team-card-name">👥 ' + team.name + '</div>'
+            +     '<div class="team-card-meta">' + members.length + ' участн. · ' + (team.created || '—') + '</div>'
+            +   '</div>'
+            +   '<div class="team-card-code" onclick="copyTeamCode(\'' + team.code + '\')">' + team.code + '</div>'
+            + '</div>'
+            + rows
+            + '<div class="invite-hint">'
+            +   '<a href="' + inviteLink + '" target="_blank" style="color:#a5b4fc;text-decoration:none;">🔗 Пригласить</a>'
+            +   ' &nbsp;·&nbsp; '
+            +   '<span onclick="addDemoMember(' + idx + ')" style="cursor:pointer;color:rgba(255,255,255,0.4);">+ участник</span>'
+            +   ' &nbsp;·&nbsp; '
+            +   '<span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span>'
+            + '</div>'
+            + '</div>';
+    }
+
+    wrap.innerHTML = html;
 }
 
 /* ── Показать/скрыть форму создания команды ── */

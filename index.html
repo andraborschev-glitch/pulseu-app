@@ -568,6 +568,9 @@
         }
 
         /* Ячейка дня */
+        .day-cell.locked { cursor: default; }
+        .day-cell.locked .dot:not(.done) { opacity: 0.35; }
+
         .day-cell {
             text-align: center;
             padding: 4px 2px;
@@ -968,6 +971,7 @@
             border: 1px solid rgba(255,255,255,0.08);
             transition: background 0.2s;
             max-width: 160px;
+            margin-bottom: 14px;
         }
 
         .user-chip:active { background: rgba(255,255,255,0.1); }
@@ -1307,6 +1311,104 @@
             70%  { transform: scale(1.2) rotate(5deg);  opacity:1; }
             100% { transform: scale(1) rotate(0deg);   opacity:1; }
         }
+
+        /* ===== КАСТОМНЫЕ ПРИВЫЧКИ ===== */
+        .custom-habit-section {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .custom-habit-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+        }
+
+        .custom-habit-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .custom-chip {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 8px 5px 10px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: default;
+            background: rgba(167,139,250,0.15);
+            border: 1.5px solid rgba(167,139,250,0.4);
+            color: #c4b5fd;
+        }
+
+        .custom-chip-remove {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .custom-chip-remove:active { background: rgba(239,68,68,0.3); color: #fff; }
+
+        .custom-habit-add-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .custom-emoji-input {
+            width: 44px;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            padding: 9px 4px;
+            color: #fff;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+        }
+
+        .custom-name-input {
+            flex: 1;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+            padding: 9px 12px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .custom-name-input::placeholder { color: rgba(255,255,255,0.25); }
+
+        .custom-habit-add-btn {
+            flex-shrink: 0;
+            background: linear-gradient(135deg,#667eea,#a78bfa);
+            border: none;
+            border-radius: 10px;
+            width: 38px; height: 38px;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .custom-habit-add-btn:active { opacity: 0.7; }
 
         .twin-page {
             padding-bottom: 24px;
@@ -1997,6 +2099,17 @@
             <div class="profile-field-label">Мои привычки (выбери до 8)</div>
             <div id="habitPickerWrap"></div>
             <div class="habits-limit-note" id="habitsLimitNote"></div>
+
+            <div class="custom-habit-section">
+                <div class="custom-habit-label">✏️ Своя привычка</div>
+                <div class="custom-habit-list" id="customHabitList"></div>
+                <div class="custom-habit-add-row">
+                    <input class="custom-emoji-input" id="customHabitEmoji" maxlength="2" placeholder="😀" />
+                    <input class="custom-name-input" id="customHabitName" maxlength="30" placeholder="Название привычки…"
+                           onkeydown="if(event.key==='Enter')addCustomHabit()"/>
+                    <button class="custom-habit-add-btn" onclick="addCustomHabit()">+</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2325,8 +2438,13 @@ const DEFAULT_HABIT_IDS = ['pushups', 'water', 'read', 'walk', 'shower'];
 
 function getActiveHabits() {
     const sel = profile.selectedHabits;
-    if (!sel || sel.length === 0) return HABITS_ALL.filter(h => DEFAULT_HABIT_IDS.includes(h.id));
-    return HABITS_ALL.filter(h => sel.includes(h.id));
+    const base = (!sel || sel.length === 0)
+        ? HABITS_ALL.filter(h => DEFAULT_HABIT_IDS.includes(h.id))
+        : HABITS_ALL.filter(h => sel.includes(h.id));
+    const custom = (profile.customHabits || []).filter(h =>
+        !sel || sel.length === 0 ? true : sel.includes(h.id)
+    );
+    return [...base, ...custom];
 }
 
 const MONTHS_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь',
@@ -2373,6 +2491,13 @@ function save() {
 }
 
 function toggleHabit(habitId, day) {
+    const today = new Date();
+    const isCurrentMonth = viewDate.getFullYear() === today.getFullYear()
+                        && viewDate.getMonth()    === today.getMonth();
+    if (!isCurrentMonth || day !== today.getDate()) {
+        showToast('Можно отмечать только сегодня');
+        return;
+    }
     const mk = getMonthKey(viewDate);
     if (!data[mk]) data[mk] = {};
     if (!data[mk][habitId]) data[mk][habitId] = {};
@@ -2441,8 +2566,11 @@ function renderGrid() {
 
             const dotStyle = isDone ? `background:${habit.color};box-shadow:0 0 8px ${habit.color}55;` : '';
             const check = isDone ? '✓' : '';
+            const isClickable = isCurrentMonth && d === today.getDate();
+            const cellClass = 'day-cell' + (isClickable ? '' : ' locked');
+            const clickAttr = isClickable ? `onclick="toggleHabit('${habit.id}',${d})"` : '';
 
-            bodyHtml += `<td class="day-cell" onclick="toggleHabit('${habit.id}',${d})">
+            bodyHtml += `<td class="${cellClass}" ${clickAttr}>
                 <div class="${dotClass}" style="${dotStyle}">${check}</div>
             </td>`;
         }
@@ -2721,6 +2849,7 @@ function renderHabitPicker() {
 
     document.getElementById('habitPickerWrap').innerHTML = html;
     updateHabitLimitNote();
+    renderCustomHabitList();
 }
 
 function toggleHabitChip(el, color) {
@@ -2744,9 +2873,72 @@ function toggleHabitChip(el, color) {
 }
 
 function updateHabitLimitNote() {
-    const n = document.querySelectorAll('.habit-chip.selected').length;
+    const stdSel  = document.querySelectorAll('.habit-chip.selected').length;
+    const custAll = (profile.customHabits || []).length;
+    const n = stdSel + custAll;
     const note = document.getElementById('habitsLimitNote');
     if (note) note.textContent = `Выбрано: ${n} из ${MAX_HABITS}`;
+}
+
+/* ── Кастомные привычки ── */
+const CUSTOM_COLORS = ['#a78bfa','#f97316','#34d399','#f472b6','#38bdf8','#fbbf24','#4ade80','#fb923c'];
+
+function renderCustomHabitList() {
+    const list = document.getElementById('customHabitList');
+    if (!list) return;
+    const customs = profile.customHabits || [];
+    if (!customs.length) { list.innerHTML = ''; return; }
+    list.innerHTML = customs.map((h, i) =>
+        `<div class="custom-chip">
+            ${h.emoji} ${h.name}
+            <button class="custom-chip-remove" onclick="removeCustomHabit('${h.id}')">✕</button>
+        </div>`
+    ).join('');
+}
+
+function addCustomHabit() {
+    const emojiEl = document.getElementById('customHabitEmoji');
+    const nameEl  = document.getElementById('customHabitName');
+    const emoji = emojiEl.value.trim() || '⭐';
+    const name  = nameEl.value.trim();
+    if (!name) { showToast('Введи название привычки'); nameEl.focus(); return; }
+
+    const totalSel = document.querySelectorAll('.habit-chip.selected').length;
+    const custCount = (profile.customHabits || []).length;
+    if (totalSel + custCount >= MAX_HABITS) {
+        showToast(`Максимум ${MAX_HABITS} привычек`);
+        return;
+    }
+
+    const id    = 'custom_' + Date.now();
+    const color = CUSTOM_COLORS[custCount % CUSTOM_COLORS.length];
+    if (!profile.customHabits) profile.customHabits = [];
+    profile.customHabits.push({ id, emoji, name, color });
+
+    // Добавляем в selectedHabits чтобы сразу был активным
+    if (!profile.selectedHabits) {
+        profile.selectedHabits = Array.from(
+            document.querySelectorAll('.habit-chip.selected')
+        ).map(el => el.dataset.id);
+    }
+    profile.selectedHabits.push(id);
+
+    localStorage.setItem('twinner_profile', JSON.stringify(profile));
+
+    emojiEl.value = '';
+    nameEl.value  = '';
+    renderCustomHabitList();
+    updateHabitLimitNote();
+    showToast('✅ Привычка «' + name + '» добавлена!');
+}
+
+function removeCustomHabit(id) {
+    profile.customHabits = (profile.customHabits || []).filter(h => h.id !== id);
+    profile.selectedHabits = (profile.selectedHabits || []).filter(sid => sid !== id);
+    localStorage.setItem('twinner_profile', JSON.stringify(profile));
+    renderCustomHabitList();
+    updateHabitLimitNote();
+    render();
 }
 
 function saveProfile() {

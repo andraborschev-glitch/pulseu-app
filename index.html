@@ -1023,6 +1023,134 @@
 
         .profile-panel.open { transform: translateY(0); }
 
+        /* ===== ПАНЕЛЬ УЧАСТНИКА ===== */
+        .member-panel {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #141428;
+            border-radius: 24px 24px 0 0;
+            padding: 0 16px 48px;
+            z-index: 110;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.32,0.72,0,1);
+            max-height: 88vh;
+            overflow-y: auto;
+        }
+
+        .member-panel.open { transform: translateY(0); }
+
+        .member-panel-drag {
+            width: 40px; height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 99px;
+            margin: 14px auto 20px;
+        }
+
+        .mp-hero {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .mp-avatar {
+            width: 64px; height: 64px;
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px;
+            flex-shrink: 0;
+        }
+
+        .mp-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .mp-team {
+            font-size: 13px;
+            color: rgba(255,255,255,0.35);
+            margin-top: 3px;
+        }
+
+        .mp-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .mp-stat {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+
+        .mp-stat-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .mp-stat-lbl {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .mp-section-title {
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .mp-calendar {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            margin-bottom: 22px;
+        }
+
+        .mp-day {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.06);
+        }
+
+        .mp-day.done { background: #667eea; }
+        .mp-day.streak { background: #f97316; }
+
+        .mp-bar-wrap {
+            margin-bottom: 22px;
+        }
+
+        .mp-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 8px;
+        }
+
+        .mp-bar-track {
+            height: 8px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .mp-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #667eea, #f093fb);
+            transition: width 0.8s ease;
+        }
+
         .profile-drag {
             width: 40px;
             height: 4px;
@@ -1159,6 +1287,267 @@
 
         .profile-save-btn:active { opacity: 0.8; }
 
+        /* ===== ВКЛАДКА: ДВОЙНИК ===== */
+        @keyframes floatChar {
+            0%,100% { transform: translateY(0px) scale(1); }
+            50%      { transform: translateY(-12px) scale(1.04); }
+        }
+
+        @keyframes glowPulse {
+            0%,100% { box-shadow: 0 0 30px 8px var(--glow,#667eea88); }
+            50%      { box-shadow: 0 0 60px 20px var(--glow,#667eea88); }
+        }
+
+        @keyframes xpFill {
+            from { width: 0%; }
+        }
+
+        @keyframes starPop {
+            0%   { transform: scale(0) rotate(-20deg); opacity:0; }
+            70%  { transform: scale(1.2) rotate(5deg);  opacity:1; }
+            100% { transform: scale(1) rotate(0deg);   opacity:1; }
+        }
+
+        .twin-page {
+            padding-bottom: 24px;
+        }
+
+        .twin-stage-track {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .twin-stage-track::before {
+            content: '';
+            position: absolute;
+            left: 16px; right: 16px;
+            top: 50%;
+            height: 2px;
+            background: rgba(255,255,255,0.08);
+            z-index: 0;
+        }
+
+        .twin-stage-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .twin-stage-dot {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.07);
+            border: 2px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            transition: all 0.4s;
+        }
+
+        .twin-stage-dot.reached {
+            border-color: transparent;
+        }
+
+        .twin-stage-dot.current {
+            transform: scale(1.2);
+            animation: glowPulse 2s infinite;
+        }
+
+        .twin-stage-name {
+            font-size: 9px;
+            color: rgba(255,255,255,0.3);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .twin-stage-node.reached .twin-stage-name { color: rgba(255,255,255,0.6); }
+        .twin-stage-node.current .twin-stage-name { color: #fff; font-size: 10px; }
+
+        .twin-arena {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 16px 20px;
+            margin-bottom: 20px;
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .twin-arena::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 80%, var(--arena-glow, rgba(102,126,234,0.18)) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .twin-char {
+            font-size: 90px;
+            line-height: 1;
+            margin-bottom: 16px;
+            animation: floatChar 3s ease-in-out infinite;
+            filter: drop-shadow(0 8px 24px var(--char-shadow, rgba(102,126,234,0.5)));
+        }
+
+        .twin-level-badge {
+            font-size: 12px;
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 99px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .twin-char-name {
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .twin-char-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.45);
+            text-align: center;
+            max-width: 260px;
+            line-height: 1.5;
+        }
+
+        .twin-xp-section {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .twin-xp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .twin-xp-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .twin-xp-val {
+            font-size: 13px;
+            font-weight: 800;
+            color: #a5b4fc;
+        }
+
+        .twin-xp-track {
+            height: 10px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .twin-xp-fill {
+            height: 100%;
+            border-radius: 99px;
+            animation: xpFill 1.2s ease-out forwards;
+        }
+
+        .twin-xp-next {
+            font-size: 11px;
+            color: rgba(255,255,255,0.25);
+            text-align: right;
+        }
+
+        .twin-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .twin-stat-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 14px 8px;
+            text-align: center;
+        }
+
+        .twin-stat-icon { font-size: 20px; margin-bottom: 4px; }
+
+        .twin-stat-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 3px;
+        }
+
+        .twin-stat-lbl {
+            font-size: 10px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .twin-achievements {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px;
+            padding: 16px;
+        }
+
+        .twin-ach-title {
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+
+        .twin-ach-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .twin-ach {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            animation: starPop 0.4s ease-out both;
+        }
+
+        .twin-ach-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+        }
+
+        .twin-ach-icon.locked {
+            background: rgba(255,255,255,0.04);
+            filter: grayscale(1);
+            opacity: 0.3;
+        }
+
+        .twin-ach-name {
+            font-size: 10px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .twin-ach.unlocked .twin-ach-name { color: rgba(255,255,255,0.7); }
+
         /* ===== ВЫБОР ПРИВЫЧЕК ===== */
         .habit-picker-section { margin-bottom: 18px; }
 
@@ -1214,6 +1603,40 @@
 <div class="toast" id="toast"></div>
 
 <!-- ПРОФИЛЬ ОВЕРЛЕЙ -->
+<!-- ПАНЕЛЬ ПРОФИЛЯ УЧАСТНИКА -->
+<div class="profile-overlay" id="memberOverlay" onclick="closeMemberPanel()" style="z-index:109;"></div>
+<div class="member-panel" id="memberPanel">
+    <div class="member-panel-drag"></div>
+    <div class="mp-hero">
+        <div class="mp-avatar" id="mpAvatar">⚡</div>
+        <div>
+            <div class="mp-name" id="mpName">—</div>
+            <div class="mp-team" id="mpTeam">—</div>
+        </div>
+    </div>
+    <div class="mp-stats-row">
+        <div class="mp-stat">
+            <div class="mp-stat-val" id="mpStreak">0</div>
+            <div class="mp-stat-lbl">🔥 серия</div>
+        </div>
+        <div class="mp-stat">
+            <div class="mp-stat-val" id="mpCheckins">0</div>
+            <div class="mp-stat-lbl">✅ чекинов</div>
+        </div>
+        <div class="mp-stat">
+            <div class="mp-stat-val" id="mpPct">0%</div>
+            <div class="mp-stat-lbl">📈 актив.</div>
+        </div>
+    </div>
+    <div class="mp-section-title">Активность за 30 дней</div>
+    <div class="mp-calendar" id="mpCalendar"></div>
+    <div class="mp-section-title">Прогресс</div>
+    <div class="mp-bar-wrap">
+        <div class="mp-bar-label"><span>Серия от максимума</span><span id="mpBarPctLbl">0%</span></div>
+        <div class="mp-bar-track"><div class="mp-bar-fill" id="mpBarFill" style="width:0%"></div></div>
+    </div>
+</div>
+
 <div class="profile-overlay" id="profileOverlay" onclick="closeProfile()"></div>
 <div class="profile-panel" id="profilePanel">
     <div class="profile-drag"></div>
@@ -1282,6 +1705,10 @@
 <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('habits')" id="tab-btn-habits">
         <span class="tab-icon">📋</span>Привычки
+    </button>
+    <button class="tab-btn" onclick="switchTab('twin')" id="tab-btn-twin">
+        <div class="tab-icon">⚡</div>
+        <div>Двойник</div>
     </button>
     <button class="tab-btn" onclick="switchTab('community')" id="tab-btn-community">
         <span class="tab-icon">🤝</span>Сообщество
@@ -1450,6 +1877,61 @@
     <div id="allGroupsWrap"></div>
 
 </div><!-- /tab-community -->
+
+<!-- ===== ВКЛАДКА: ДВОЙНИК ===== -->
+<div id="tab-twin" class="tab-content" style="display:none;">
+  <div class="twin-page">
+
+    <!-- Дорожка стадий -->
+    <div class="twin-stage-track" id="twinStageTrack"></div>
+
+    <!-- Арена с персонажем -->
+    <div class="twin-arena" id="twinArena">
+        <div class="twin-char" id="twinChar">🌱</div>
+        <div class="twin-level-badge" id="twinLevelBadge">Ур. 1</div>
+        <div class="twin-char-name" id="twinCharName">Росток</div>
+        <div class="twin-char-desc" id="twinCharDesc">Первые шаги к лучшей версии себя</div>
+    </div>
+
+    <!-- XP-бар -->
+    <div class="twin-xp-section">
+        <div class="twin-xp-header">
+            <span class="twin-xp-label">Опыт</span>
+            <span class="twin-xp-val" id="twinXpVal">0 XP</span>
+        </div>
+        <div class="twin-xp-track">
+            <div class="twin-xp-fill" id="twinXpFill" style="width:0%;background:linear-gradient(90deg,#667eea,#f093fb);"></div>
+        </div>
+        <div class="twin-xp-next" id="twinXpNext">до следующего уровня</div>
+    </div>
+
+    <!-- Статы -->
+    <div class="twin-stats-grid">
+        <div class="twin-stat-card">
+            <div class="twin-stat-icon">🔥</div>
+            <div class="twin-stat-val" id="twinStatStreak">0</div>
+            <div class="twin-stat-lbl">серия дней</div>
+        </div>
+        <div class="twin-stat-card">
+            <div class="twin-stat-icon">✅</div>
+            <div class="twin-stat-val" id="twinStatCheckins">0</div>
+            <div class="twin-stat-lbl">всего выполнено</div>
+        </div>
+        <div class="twin-stat-card">
+            <div class="twin-stat-icon">📅</div>
+            <div class="twin-stat-val" id="twinStatToday">0</div>
+            <div class="twin-stat-lbl">сегодня</div>
+        </div>
+    </div>
+
+    <!-- Достижения -->
+    <div class="twin-achievements">
+        <div class="twin-ach-title">Достижения</div>
+        <div class="twin-ach-grid" id="twinAchGrid"></div>
+    </div>
+
+  </div>
+</div><!-- /tab-twin -->
 
 <div class="footer">⚡ <span>Twinner</span> · твой цифровой двойник</div>
 
@@ -2172,7 +2654,7 @@ function saveTeams() {
 }
 
 function getBotUsername() {
-    return 'Twinner_habit_bot';
+    return 'TwinnerBot';
 }
 
 /* ── Открыть ссылку правильным способом в любом окружении ── */
@@ -2353,17 +2835,20 @@ function renderMyTeams() {
             return (b.streak - a.streak) || (b.checkins - a.checkins);
         });
 
+        // Нужен originalIdx для openMemberPanel (т.к. sorted != members по порядку)
         var rows = '';
         for (var i = 0; i < sorted.length; i++) {
             var m = sorted[i];
+            // Найдём оригинальный индекс участника в team.members
+            var origIdx = team.members.indexOf(m);
             var medal = i < 3 ? medals[i] : (i + 1) + '.';
             var meTag = m.isMe ? ' <span style="font-size:10px;color:#a5b4fc;">ты</span>' : '';
-            rows += '<div class="member-row">'
+            rows += '<div class="member-row" onclick="openMemberPanel(' + idx + ',' + origIdx + ')" style="cursor:pointer;">'
                 + '<div class="member-rank">' + medal + '</div>'
                 + '<div class="member-avatar" style="background:' + m.color + '22;">' + m.avatar + '</div>'
                 + '<div class="member-info">'
                 +   '<div class="member-name">' + m.name + meTag + '</div>'
-                +   '<div class="member-sub">✅ ' + m.checkins + ' чекинов</div>'
+                +   '<div class="member-sub">✅ ' + m.checkins + ' чекинов · нажми для деталей</div>'
                 + '</div>'
                 + '<div class="member-streak">🔥 ' + m.streak + ' <span style="font-size:10px;font-weight:400;color:rgba(255,255,255,0.35);">дн</span></div>'
                 + '</div>';
@@ -2389,6 +2874,74 @@ function renderMyTeams() {
     }
 
     wrap.innerHTML = html;
+}
+
+// =============================================
+//  ПАНЕЛЬ УЧАСТНИКА
+// =============================================
+
+function openMemberPanel(teamIdx, memberIdx) {
+    var team = myTeams[teamIdx];
+    if (!team) return;
+    var m = team.members[memberIdx];
+    if (!m) return;
+
+    // Шапка
+    var av = document.getElementById('mpAvatar');
+    av.textContent = m.avatar;
+    av.style.background = m.color + '22';
+    av.style.border = '2px solid ' + m.color + '44';
+
+    document.getElementById('mpName').textContent = m.name + (m.isMe ? ' (ты)' : '');
+    document.getElementById('mpTeam').textContent = '👥 ' + team.name;
+
+    // Статистика
+    var streak   = m.streak   || 0;
+    var checkins = m.checkins || 0;
+    var daysInApp = Math.max(checkins, streak, 30);
+    var pct = daysInApp > 0 ? Math.min(100, Math.round(checkins / daysInApp * 100)) : 0;
+
+    document.getElementById('mpStreak').textContent   = streak;
+    document.getElementById('mpCheckins').textContent = checkins;
+    document.getElementById('mpPct').textContent      = pct + '%';
+
+    // Мини-календарь 30 дней: генерируем из streak/checkins
+    var cal = document.getElementById('mpCalendar');
+    var calHtml = '';
+    // Последние streak дней = активны, остальные — с учётом общего % активности
+    for (var d = 29; d >= 0; d--) {
+        var active = false;
+        if (d < streak) {
+            active = true; // последние streak дней точно активны
+        } else {
+            // для остальных дней — рандом на основе pct (детерминированный по имени+дню)
+            var seed = (m.name.charCodeAt(0) || 65) + d * 7;
+            active = (seed % 100) < pct;
+        }
+        var cls = active ? (d < streak ? 'mp-day streak' : 'mp-day done') : 'mp-day';
+        calHtml += '<div class="' + cls + '" title="' + (29 - d + 1) + ' дн. назад"></div>';
+    }
+    cal.innerHTML = calHtml;
+
+    // Прогресс-бар: серия от 30 дней (100% = 30 дней)
+    var maxStreak = 30;
+    var barPct = Math.min(100, Math.round(streak / maxStreak * 100));
+    document.getElementById('mpBarPctLbl').textContent = barPct + '%';
+    document.getElementById('mpBarFill').style.width = '0%';
+
+    // Открываем панель
+    document.getElementById('memberOverlay').classList.add('open');
+    document.getElementById('memberPanel').classList.add('open');
+
+    // Анимируем бар с задержкой
+    setTimeout(function() {
+        document.getElementById('mpBarFill').style.width = barPct + '%';
+    }, 200);
+}
+
+function closeMemberPanel() {
+    document.getElementById('memberOverlay').classList.remove('open');
+    document.getElementById('memberPanel').classList.remove('open');
 }
 
 /* ── Показать/скрыть форму создания команды ── */
@@ -2470,7 +3023,181 @@ function switchTab(name) {
     document.getElementById('tab-' + name).classList.add('active');
     document.getElementById('tab-btn-' + name).classList.add('active');
     if (name === 'community') { renderCommunity(); renderMyTeams(); }
+    if (name === 'twin') { renderTwin(); }
     window.scrollTo(0, 0);
+}
+
+// =============================================
+//  СИСТЕМА ДВОЙНИКА
+// =============================================
+
+var TWIN_STAGES = [
+    { emoji: '🌱', name: 'Росток',   color: '#4ade80', glow: 'rgba(74,222,128,0.25)',  bg: 'rgba(74,222,128,0.06)',  minStreak: 0  },
+    { emoji: '⚡', name: 'Искра',    color: '#facc15', glow: 'rgba(250,204,21,0.25)',  bg: 'rgba(250,204,21,0.06)',  minStreak: 3  },
+    { emoji: '🔥', name: 'Пламя',    color: '#f97316', glow: 'rgba(249,115,22,0.25)',  bg: 'rgba(249,115,22,0.06)',  minStreak: 7  },
+    { emoji: '💫', name: 'Чемпион',  color: '#a78bfa', glow: 'rgba(167,139,250,0.25)', bg: 'rgba(167,139,250,0.06)', minStreak: 14 },
+    { emoji: '🌟', name: 'Легенда',  color: '#f093fb', glow: 'rgba(240,147,251,0.25)', bg: 'rgba(240,147,251,0.06)', minStreak: 30 }
+];
+
+var TWIN_STAGE_DESCS = [
+    'Первые шаги. Заложи привычку — и персонаж начнёт расти.',
+    'Серия началась! Ты почувствовал вкус постоянства.',
+    'Неделя без пропусков! Огонь внутри разгорается.',
+    'Две недели — ты уже сильнее большинства. Не останавливайся.',
+    'Месячная серия. Ты — легенда. Двойник достиг вершины.'
+];
+
+var TWIN_ACHIEVEMENTS = [
+    { icon: '🌅', name: 'Первый шаг',   cond: function(s,c,t) { return c >= 1; }  },
+    { icon: '🔥', name: '3 дня подряд', cond: function(s,c,t) { return s >= 3; }  },
+    { icon: '⚡', name: '7 дней',        cond: function(s,c,t) { return s >= 7; }  },
+    { icon: '💪', name: '10 выполнено', cond: function(s,c,t) { return c >= 10; } },
+    { icon: '🏅', name: '14 дней',       cond: function(s,c,t) { return s >= 14; } },
+    { icon: '✨', name: '50 выполнено', cond: function(s,c,t) { return c >= 50; } },
+    { icon: '🏆', name: '30 дней',       cond: function(s,c,t) { return s >= 30; } },
+    { icon: '🌟', name: '100 выполнено',cond: function(s,c,t) { return c >= 100; } }
+];
+
+function getTwinStats() {
+    // Подтягиваем данные из основного хранилища привычек
+    var raw = localStorage.getItem('twinner_v2');
+    var streak = 0, totalCheckins = 0, todayCount = 0;
+    try {
+        var d = JSON.parse(raw || '{}');
+        // Считаем серию: ищем последовательные дни назад от сегодня
+        var today = new Date();
+        var todayStr = today.toISOString().slice(0,10);
+        // Подсчёт суммарных чекинов из checkin и habits
+        if (d.checkins && Array.isArray(d.checkins)) {
+            totalCheckins = d.checkins.length;
+        }
+        // Считаем серию из checkins
+        if (d.checkins && d.checkins.length) {
+            var sorted = d.checkins.slice().sort();
+            var cur = 0;
+            var dt = new Date(today);
+            for (var i = sorted.length - 1; i >= 0; i--) {
+                var dStr = dt.toISOString().slice(0,10);
+                if (sorted[i] === dStr) {
+                    cur++;
+                    dt.setDate(dt.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            streak = cur;
+        }
+        // Сегодняшние отметки
+        if (d.habits && typeof d.habits === 'object') {
+            var hList = Object.values(d.habits);
+            for (var h = 0; h < hList.length; h++) {
+                if (hList[h] && hList[h][todayStr]) todayCount++;
+            }
+        }
+        // Fallback: если нет данных — используем демо из команд
+        if (totalCheckins === 0 && myTeams.length) {
+            var me = null;
+            for (var t = 0; t < myTeams.length; t++) {
+                for (var m = 0; m < myTeams[t].members.length; m++) {
+                    if (myTeams[t].members[m].isMe) { me = myTeams[t].members[m]; break; }
+                }
+                if (me) break;
+            }
+            if (me) {
+                streak = me.streak || 0;
+                totalCheckins = me.checkins || 0;
+            }
+        }
+    } catch(e) {}
+    return { streak: streak, checkins: totalCheckins, today: todayCount };
+}
+
+function calcXP(streak, checkins, today) {
+    return streak * 15 + checkins * 8 + today * 20;
+}
+
+function getStageIdx(streak) {
+    var idx = 0;
+    for (var i = TWIN_STAGES.length - 1; i >= 0; i--) {
+        if (streak >= TWIN_STAGES[i].minStreak) { idx = i; break; }
+    }
+    return idx;
+}
+
+function renderTwin() {
+    var stats = getTwinStats();
+    var streak = stats.streak, checkins = stats.checkins, today = stats.today;
+    var xp = calcXP(streak, checkins, today);
+
+    // Уровень: 1 уровень каждые 50 XP
+    var level = Math.floor(xp / 50) + 1;
+    var xpInLevel = xp % 50;
+    var xpPct = xpInLevel / 50 * 100;
+
+    var stageIdx = getStageIdx(streak);
+    var stage = TWIN_STAGES[stageIdx];
+
+    // ── Арена ──
+    var arena = document.getElementById('twinArena');
+    arena.style.background = stage.bg;
+    arena.style.setProperty('--arena-glow', stage.glow);
+
+    var charEl = document.getElementById('twinChar');
+    charEl.textContent = stage.emoji;
+    charEl.style.setProperty('--char-shadow', stage.glow);
+
+    var badge = document.getElementById('twinLevelBadge');
+    badge.textContent = 'Ур. ' + level;
+    badge.style.background = stage.color + '22';
+    badge.style.color = stage.color;
+    badge.style.border = '1px solid ' + stage.color + '44';
+
+    document.getElementById('twinCharName').textContent = stage.name;
+    document.getElementById('twinCharDesc').textContent = TWIN_STAGE_DESCS[stageIdx];
+
+    // ── XP-бар ──
+    document.getElementById('twinXpVal').textContent = xp + ' XP';
+    var fill = document.getElementById('twinXpFill');
+    fill.style.width = '0%';
+    fill.style.background = 'linear-gradient(90deg,' + stage.color + ',' + stage.glow.replace('rgba','rgb').replace(/,\s*[\d.]+\)/, ')') + ')';
+    fill.style.background = 'linear-gradient(90deg,#667eea,' + stage.color + ')';
+    setTimeout(function() { fill.style.width = xpPct + '%'; }, 100);
+
+    var nextXp = 50 - xpInLevel;
+    document.getElementById('twinXpNext').textContent = nextXp + ' XP до уровня ' + (level + 1);
+
+    // ── Статы ──
+    document.getElementById('twinStatStreak').textContent   = streak;
+    document.getElementById('twinStatCheckins').textContent = checkins;
+    document.getElementById('twinStatToday').textContent    = today;
+
+    // ── Дорожка стадий ──
+    var trackHtml = '';
+    for (var i = 0; i < TWIN_STAGES.length; i++) {
+        var s = TWIN_STAGES[i];
+        var cls = i < stageIdx ? 'reached' : (i === stageIdx ? 'reached current' : '');
+        var dotCls = i < stageIdx ? 'reached' : (i === stageIdx ? 'current' : '');
+        var dotBg = i <= stageIdx ? 'background:' + s.color + '33;border-color:' + s.color + ';' : '';
+        if (i === stageIdx) dotBg += '--glow:' + s.glow + ';';
+        trackHtml += '<div class="twin-stage-node ' + cls + '">'
+            + '<div class="twin-stage-dot ' + dotCls + '" style="' + dotBg + '">' + s.emoji + '</div>'
+            + '<div class="twin-stage-name">' + s.name + '</div>'
+            + '</div>';
+    }
+    document.getElementById('twinStageTrack').innerHTML = trackHtml;
+
+    // ── Достижения ──
+    var achHtml = '';
+    for (var a = 0; a < TWIN_ACHIEVEMENTS.length; a++) {
+        var ach = TWIN_ACHIEVEMENTS[a];
+        var unlocked = ach.cond(streak, checkins, today);
+        var achBg = unlocked ? 'background:' + TWIN_STAGES[Math.min(stageIdx, 2)].color + '22;' : '';
+        achHtml += '<div class="twin-ach ' + (unlocked ? 'unlocked' : '') + '" style="animation-delay:' + (a * 0.05) + 's">'
+            + '<div class="twin-ach-icon' + (unlocked ? '' : ' locked') + '" style="' + achBg + '">' + ach.icon + '</div>'
+            + '<div class="twin-ach-name">' + ach.name + '</div>'
+            + '</div>';
+    }
+    document.getElementById('twinAchGrid').innerHTML = achHtml;
 }
 
 loadTeams();

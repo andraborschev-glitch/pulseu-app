@@ -2101,7 +2101,7 @@ function toggleGroup(id, link) {
         renderCommunity();
         showToast('✅ Вступил в группу!');
         // Открываем Telegram-группу
-        setTimeout(() => { window.open(link, '_blank'); }, 400);
+        setTimeout(function(){ openTgLink(link); }, 400);
     }
 }
 
@@ -2172,8 +2172,19 @@ function saveTeams() {
 }
 
 function getBotUsername() {
-    // Попытка получить из Telegram WebApp, иначе — плейсхолдер
     return 'Twinner_habit_bot';
+}
+
+/* ── Открыть ссылку правильным способом в любом окружении ── */
+function openTgLink(url) {
+    var tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && tg.openTelegramLink && url.indexOf('t.me') !== -1) {
+        tg.openTelegramLink(url);
+    } else if (tg && tg.openLink) {
+        tg.openLink(url);
+    } else {
+        window.open(url, '_blank');
+    }
 }
 
 /* ── Показать/скрыть форму ввода кода ── */
@@ -2190,8 +2201,8 @@ function toggleJoinCodeForm() {
 function doJoinByCode() {
     const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
     if (code.length < 4) { showToast('Введи код (6 символов)'); return; }
-    const botUrl = `https://t.me/${getBotUsername()}?start=joingroup_${code}`;
-    window.open(botUrl, '_blank');
+    const botUrl = 'https://t.me/' + getBotUsername() + '?start=joingroup_' + code;
+    openTgLink(botUrl);
     document.getElementById('joinCodeForm').classList.remove('visible');
     document.getElementById('joinCodeInput').value = '';
     showToast('Открываем бота для входа в команду…');
@@ -2309,7 +2320,7 @@ function renderMyTeams() {
             + '</div>'
             + rows
             + '<div class="invite-hint">'
-            +   '<a href="' + inviteLink + '" target="_blank" style="color:#a5b4fc;text-decoration:none;">🔗 Пригласить</a>'
+            +   '<span onclick="openTgLink(\'' + inviteLink + '\')" style="color:#a5b4fc;cursor:pointer;">🔗 Пригласить</span>'
             +   ' &nbsp;·&nbsp; '
             +   '<span onclick="addDemoMember(' + idx + ')" style="cursor:pointer;color:rgba(255,255,255,0.4);">+ участник</span>'
             +   ' &nbsp;·&nbsp; '

@@ -551,6 +551,21 @@
             border-top: 1px solid rgba(255,255,255,0.04);
         }
 
+        /* Закреплённый первый столбец */
+        .grid-table thead th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background: #0e0e1e;
+        }
+
+        .grid-table tbody td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background: #0e0e1e;
+        }
+
         .habit-name-cell {
             padding: 8px 10px 8px 14px;
             display: flex;
@@ -1277,7 +1292,7 @@
         .profile-save-btn {
             display: block;
             width: calc(100% - 40px);
-            margin: 20px 20px 0;
+            margin: 20px 20px 80px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             border: none;
             border-radius: 14px;

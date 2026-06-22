@@ -1879,7 +1879,7 @@
 </div><!-- /tab-community -->
 
 <!-- ===== ВКЛАДКА: ДВОЙНИК ===== -->
-<div id="tab-twin" class="tab-content" style="display:none;">
+<div id="tab-twin" class="tab-content">
   <div class="twin-page">
 
     <!-- Дорожка стадий -->
@@ -2787,6 +2787,29 @@ function cancelDeleteTeam(idx) {
     hint.innerHTML = '<span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span>';
 }
 
+/* ── Покинуть команду (для не-создателя) ── */
+function leaveTeam(idx) {
+    var hint = document.getElementById('delete-hint-' + idx);
+    if (!hint) return;
+    hint.innerHTML = '<span style="color:rgba(255,255,255,0.5);font-size:12px;">Покинуть?&nbsp;</span>'
+        + '<span onclick="confirmLeaveTeam(' + idx + ')" style="cursor:pointer;color:#f97316;font-weight:700;">Да</span>'
+        + '&nbsp;·&nbsp;'
+        + '<span onclick="cancelLeaveTeam(' + idx + ')" style="cursor:pointer;color:rgba(255,255,255,0.4);">Нет</span>';
+}
+
+function confirmLeaveTeam(idx) {
+    myTeams.splice(idx, 1);
+    saveTeams();
+    renderMyTeams();
+    showToast('Ты покинул команду');
+}
+
+function cancelLeaveTeam(idx) {
+    var hint = document.getElementById('delete-hint-' + idx);
+    if (!hint) return;
+    hint.innerHTML = '<span onclick="leaveTeam(' + idx + ')" style="cursor:pointer;color:rgba(255,255,255,0.3);">покинуть</span>';
+}
+
 /* ── Создать команду локально ── */
 function createDemoTeam(name) {
     var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -2868,7 +2891,10 @@ function renderMyTeams() {
             + '<div class="invite-hint">'
             +   '<span onclick="inviteToTeam(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">📋 Скопировать приглашение</span>'
             +   ' &nbsp;·&nbsp; '
-            +   '<span id="delete-hint-' + idx + '"><span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span></span>'
+            +   (team.isCreator !== false
+                    ? '<span id="delete-hint-' + idx + '"><span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span></span>'
+                    : '<span id="delete-hint-' + idx + '"><span onclick="leaveTeam(' + idx + ')" style="cursor:pointer;color:rgba(255,255,255,0.3);">покинуть</span></span>'
+                )
             + '</div>'
             + '</div>';
     }

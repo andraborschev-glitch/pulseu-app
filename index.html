@@ -1548,6 +1548,308 @@
 
         .twin-ach.unlocked .twin-ach-name { color: rgba(255,255,255,0.7); }
 
+        /* ===== АВАТАР-ГЕНЕРАТОР ===== */
+        @keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity:0; transform:translateY(16px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        .avgen-section {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 24px;
+            padding: 20px;
+            margin-top: 18px;
+        }
+
+        .avgen-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .avgen-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .avgen-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 99px;
+            background: rgba(167,139,250,0.15);
+            color: #a78bfa;
+            border: 1px solid rgba(167,139,250,0.3);
+            letter-spacing: 0.5px;
+        }
+
+        /* Зона загрузки фото */
+        .avgen-upload-zone {
+            border: 2px dashed rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 28px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .avgen-upload-zone:active,
+        .avgen-upload-zone.drag-over {
+            border-color: #a78bfa;
+            background: rgba(167,139,250,0.06);
+        }
+
+        .avgen-upload-zone input[type=file] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .avgen-upload-icon { font-size: 36px; margin-bottom: 8px; }
+
+        .avgen-upload-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .avgen-upload-sub {
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
+        }
+
+        /* Превью загруженных фото */
+        .avgen-photos-strip {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-bottom: 16px;
+            scrollbar-width: none;
+        }
+
+        .avgen-photos-strip::-webkit-scrollbar { display: none; }
+
+        .avgen-photo-thumb {
+            flex-shrink: 0;
+            width: 56px; height: 56px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid rgba(167,139,250,0.4);
+            animation: fadeInUp 0.3s ease-out both;
+        }
+
+        .avgen-photo-add {
+            flex-shrink: 0;
+            width: 56px; height: 56px;
+            border-radius: 12px;
+            border: 2px dashed rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+            color: rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+
+        /* Выбор стиля */
+        .avgen-styles-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .avgen-styles-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .avgen-style-btn {
+            background: rgba(255,255,255,0.04);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 10px 4px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .avgen-style-btn.selected {
+            border-color: #a78bfa;
+            background: rgba(167,139,250,0.12);
+        }
+
+        .avgen-style-icon { font-size: 22px; margin-bottom: 4px; }
+
+        .avgen-style-name {
+            font-size: 10px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.2;
+        }
+
+        .avgen-style-btn.selected .avgen-style-name { color: #c4b5fd; }
+
+        /* Кнопка генерации */
+        .avgen-generate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #a78bfa);
+            border: none;
+            border-radius: 16px;
+            padding: 15px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .avgen-generate-btn:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .avgen-generate-btn:not(:disabled):active { opacity: 0.8; }
+
+        /* Состояние загрузки */
+        .avgen-loading {
+            text-align: center;
+            padding: 32px 0;
+            display: none;
+        }
+
+        .avgen-spinner {
+            width: 48px; height: 48px;
+            border: 3px solid rgba(167,139,250,0.2);
+            border-top-color: #a78bfa;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 14px;
+        }
+
+        .avgen-loading-text {
+            font-size: 14px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .avgen-loading-step {
+            font-size: 12px;
+            color: rgba(255,255,255,0.25);
+            margin-top: 6px;
+        }
+
+        /* Галерея результатов */
+        .avgen-gallery {
+            display: none;
+        }
+
+        .avgen-gallery-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .avgen-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .avgen-result-card {
+            border-radius: 18px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 1;
+            cursor: pointer;
+            animation: fadeInUp 0.4s ease-out both;
+        }
+
+        .avgen-result-card img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Скелетон-заглушка */
+        .avgen-skeleton {
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg,
+                rgba(255,255,255,0.04) 25%,
+                rgba(255,255,255,0.08) 50%,
+                rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .avgen-result-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 20px 10px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .avgen-result-card .avgen-use-btn {
+            position: absolute;
+            top: 8px; right: 8px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            border: none;
+            border-radius: 99px;
+            padding: 5px 10px;
+            font-size: 11px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 700;
+            display: none;
+        }
+
+        .avgen-result-card:hover .avgen-use-btn,
+        .avgen-result-card.tapped .avgen-use-btn { display: block; }
+
+        .avgen-reset {
+            text-align: center;
+            margin-top: 14px;
+        }
+
+        .avgen-reset span {
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+
+        .avgen-reset span:active { color: rgba(255,255,255,0.6); }
+
         /* ===== ВЫБОР ПРИВЫЧЕК ===== */
         .habit-picker-section { margin-bottom: 18px; }
 
@@ -1928,6 +2230,51 @@
     <div class="twin-achievements">
         <div class="twin-ach-title">Достижения</div>
         <div class="twin-ach-grid" id="twinAchGrid"></div>
+    </div>
+
+    <!-- АВАТАР-ГЕНЕРАТОР -->
+    <div class="avgen-section">
+        <div class="avgen-header">
+            <div class="avgen-title">🎨 Создай своего Twinner</div>
+            <div class="avgen-badge">СКОРО</div>
+        </div>
+
+        <!-- Зона загрузки -->
+        <div class="avgen-upload-zone" id="avgenUploadZone" onclick="avgenPickFiles()">
+            <input type="file" id="avgenFileInput" accept="image/*" multiple style="display:none;" onchange="avgenHandleFiles(this.files)"/>
+            <div class="avgen-upload-icon">🤳</div>
+            <div class="avgen-upload-title">Загрузи свои фото</div>
+            <div class="avgen-upload-sub">от 3 до 10 селфи · jpg, png · до 5 МБ каждое</div>
+        </div>
+
+        <!-- Стрип загруженных фото -->
+        <div class="avgen-photos-strip" id="avgenPhotosStrip" style="display:none;"></div>
+
+        <!-- Выбор стиля -->
+        <div id="avgenStylesBlock" style="display:none;">
+            <div class="avgen-styles-label">Выбери стиль</div>
+            <div class="avgen-styles-grid" id="avgenStylesGrid"></div>
+
+            <button class="avgen-generate-btn" id="avgenGenBtn" onclick="avgenGenerate()">
+                <span>✨</span> Создать аватары
+            </button>
+        </div>
+
+        <!-- Загрузка -->
+        <div class="avgen-loading" id="avgenLoading">
+            <div class="avgen-spinner"></div>
+            <div class="avgen-loading-text">Генерируем твоего двойника…</div>
+            <div class="avgen-loading-step" id="avgenLoadingStep">Анализируем черты лица</div>
+        </div>
+
+        <!-- Галерея результатов -->
+        <div class="avgen-gallery" id="avgenGallery">
+            <div class="avgen-gallery-title">Твои аватары</div>
+            <div class="avgen-gallery-grid" id="avgenGalleryGrid"></div>
+            <div class="avgen-reset">
+                <span onclick="avgenReset()">↩ Начать заново</span>
+            </div>
+        </div>
     </div>
 
   </div>
@@ -3229,6 +3576,206 @@ function renderTwin() {
 loadTeams();
 loadJoined();
 renderMyTeams();
+
+// =============================================
+//  АВАТАР-ГЕНЕРАТОР
+// =============================================
+
+var AVGEN_STYLES = [
+    { icon: '🎌', name: 'Аниме',       id: 'anime'      },
+    { icon: '🚀', name: 'Астронавт',   id: 'astronaut'  },
+    { icon: '👑', name: 'Королева',    id: 'royal'      },
+    { icon: '🎮', name: '3D Pixar',    id: 'pixar'      },
+    { icon: '🦸', name: 'Супергерой',  id: 'hero'       },
+    { icon: '🧙', name: 'Волшебник',   id: 'wizard'     },
+    { icon: '🎨', name: 'Масло',       id: 'oil'        },
+    { icon: '🤖', name: 'Киборг',      id: 'cyborg'     }
+];
+
+// Плейсхолдер-аватары для демо (эмодзи + градиентный фон)
+var AVGEN_DEMO = [
+    { emoji: '🎌', label: 'Аниме',      bg: 'linear-gradient(135deg,#f093fb,#f5576c)' },
+    { emoji: '🚀', label: 'Астронавт',  bg: 'linear-gradient(135deg,#4facfe,#00f2fe)' },
+    { emoji: '👑', label: 'Королева',   bg: 'linear-gradient(135deg,#f6d365,#fda085)' },
+    { emoji: '🎮', label: '3D Pixar',   bg: 'linear-gradient(135deg,#a18cd1,#fbc2eb)' },
+    { emoji: '🦸', label: 'Супергерой', bg: 'linear-gradient(135deg,#667eea,#764ba2)' },
+    { emoji: '🧙', label: 'Волшебник',  bg: 'linear-gradient(135deg,#43e97b,#38f9d7)' }
+];
+
+var avgenPhotos = [];        // base64 строки
+var avgenSelectedStyle = null;
+var avgenLoadingTimer = null;
+
+var AVGEN_LOADING_STEPS = [
+    'Анализируем черты лица…',
+    'Подбираем стиль…',
+    'Рисуем контуры…',
+    'Добавляем детали…',
+    'Финальный штрих…'
+];
+
+function avgenPickFiles() {
+    document.getElementById('avgenFileInput').click();
+}
+
+function avgenHandleFiles(files) {
+    if (!files || !files.length) return;
+    var remaining = 10 - avgenPhotos.length;
+    var toAdd = Math.min(files.length, remaining);
+
+    var processed = 0;
+    for (var i = 0; i < toAdd; i++) {
+        (function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                avgenPhotos.push(e.target.result);
+                processed++;
+                if (processed === toAdd) avgenRenderPhotos();
+            };
+            reader.readAsDataURL(file);
+        })(files[i]);
+    }
+}
+
+function avgenRenderPhotos() {
+    var strip = document.getElementById('avgenPhotosStrip');
+    var zone  = document.getElementById('avgenUploadZone');
+    var stylesBlock = document.getElementById('avgenStylesBlock');
+
+    // Строим стрип
+    var html = '';
+    for (var i = 0; i < avgenPhotos.length; i++) {
+        html += '<img class="avgen-photo-thumb" src="' + avgenPhotos[i] + '" style="animation-delay:' + (i * 0.05) + 's"/>';
+    }
+    if (avgenPhotos.length < 10) {
+        html += '<div class="avgen-photo-add" onclick="avgenPickFiles()">+</div>';
+    }
+    strip.innerHTML = html;
+    strip.style.display = 'flex';
+
+    // Прячем зону загрузки если уже есть фото
+    if (avgenPhotos.length >= 3) {
+        zone.style.display = 'none';
+        stylesBlock.style.display = 'block';
+        avgenRenderStyles();
+    } else {
+        // Показываем сколько ещё нужно
+        zone.querySelector('.avgen-upload-sub').textContent =
+            'Нужно ещё ' + (3 - avgenPhotos.length) + ' фото (минимум 3)';
+    }
+}
+
+function avgenRenderStyles() {
+    var grid = document.getElementById('avgenStylesGrid');
+    var html = '';
+    for (var i = 0; i < AVGEN_STYLES.length; i++) {
+        var s = AVGEN_STYLES[i];
+        var sel = avgenSelectedStyle === s.id ? ' selected' : '';
+        html += '<div class="avgen-style-btn' + sel + '" onclick="avgenSelectStyle(\'' + s.id + '\',this)">'
+            + '<div class="avgen-style-icon">' + s.icon + '</div>'
+            + '<div class="avgen-style-name">' + s.name + '</div>'
+            + '</div>';
+    }
+    grid.innerHTML = html;
+}
+
+function avgenSelectStyle(id, el) {
+    avgenSelectedStyle = id;
+    document.querySelectorAll('.avgen-style-btn').forEach(function(b) { b.classList.remove('selected'); });
+    el.classList.add('selected');
+}
+
+function avgenGenerate() {
+    if (!avgenSelectedStyle) {
+        showToast('Выбери стиль для генерации');
+        return;
+    }
+
+    // Переключаем в режим загрузки
+    document.getElementById('avgenStylesBlock').style.display = 'none';
+    document.getElementById('avgenPhotosStrip').style.display = 'none';
+    var loading = document.getElementById('avgenLoading');
+    loading.style.display = 'block';
+
+    // Анимируем шаги
+    var stepEl = document.getElementById('avgenLoadingStep');
+    var stepIdx = 0;
+    avgenLoadingTimer = setInterval(function() {
+        stepIdx = (stepIdx + 1) % AVGEN_LOADING_STEPS.length;
+        stepEl.textContent = AVGEN_LOADING_STEPS[stepIdx];
+    }, 900);
+
+    // Симулируем 4.5 секунды генерации → показываем демо-галерею
+    setTimeout(function() {
+        clearInterval(avgenLoadingTimer);
+        loading.style.display = 'none';
+        avgenShowDemoGallery();
+    }, 4500);
+}
+
+function avgenShowDemoGallery() {
+    var gallery = document.getElementById('avgenGallery');
+    var grid    = document.getElementById('avgenGalleryGrid');
+
+    var html = '';
+    for (var i = 0; i < AVGEN_DEMO.length; i++) {
+        var d = AVGEN_DEMO[i];
+        html += '<div class="avgen-result-card" onclick="avgenTapCard(this)" style="animation-delay:' + (i * 0.08) + 's;">'
+            + '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:72px;background:' + d.bg + ';">' + d.emoji + '</div>'
+            + '<div class="avgen-result-label">' + d.label + '</div>'
+            + '<button class="avgen-use-btn" onclick="avgenUseAsAvatar(event,\'' + d.emoji + '\')">Использовать</button>'
+            + '</div>';
+    }
+
+    // Плейсхолдер "скоро больше стилей"
+    html += '<div class="avgen-result-card" style="animation-delay:0.5s;">'
+        + '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);gap:8px;">'
+        + '<span style="font-size:28px;">✨</span>'
+        + '<span style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;padding:0 12px;">25+ стилей после подключения AI</span>'
+        + '</div></div>';
+
+    html += '<div class="avgen-result-card" style="animation-delay:0.56s;">'
+        + '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);gap:8px;">'
+        + '<span style="font-size:28px;">🎭</span>'
+        + '<span style="font-size:11px;color:rgba(255,255,255,0.3);text-align:center;padding:0 12px;">Комикс, Pixar, Масло…</span>'
+        + '</div></div>';
+
+    grid.innerHTML = html;
+    gallery.style.display = 'block';
+
+    showToast('🎨 Демо-версия! Реальный AI появится скоро');
+}
+
+function avgenTapCard(el) {
+    el.classList.toggle('tapped');
+}
+
+function avgenUseAsAvatar(evt, emoji) {
+    evt.stopPropagation();
+    // Сохраняем как аватар профиля
+    try {
+        var prof = JSON.parse(localStorage.getItem('twinner_profile') || '{}');
+        prof.avatar = emoji;
+        localStorage.setItem('twinner_profile', JSON.stringify(prof));
+    } catch(e) {}
+    showToast('✅ Аватар ' + emoji + ' установлен как твой Twinner!');
+}
+
+function avgenReset() {
+    avgenPhotos = [];
+    avgenSelectedStyle = null;
+    clearInterval(avgenLoadingTimer);
+
+    document.getElementById('avgenUploadZone').style.display = 'block';
+    document.getElementById('avgenUploadZone').querySelector('.avgen-upload-sub').textContent =
+        'от 3 до 10 селфи · jpg, png · до 5 МБ каждое';
+    document.getElementById('avgenPhotosStrip').style.display = 'none';
+    document.getElementById('avgenPhotosStrip').innerHTML = '';
+    document.getElementById('avgenStylesBlock').style.display = 'none';
+    document.getElementById('avgenLoading').style.display = 'none';
+    document.getElementById('avgenGallery').style.display = 'none';
+    document.getElementById('avgenFileInput').value = '';
+}
 </script>
 </body>
 </html>

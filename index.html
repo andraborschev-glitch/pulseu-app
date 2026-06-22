@@ -1415,7 +1415,7 @@
     <div class="join-code-form" id="createTeamForm">
         <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:10px;">Название твоей команды:</div>
         <div class="join-code-row">
-            <input class="join-code-input" id="createTeamInput" maxlength="50" placeholder="Команда Макса" style="letter-spacing:0;text-transform:none;font-size:14px;"/>
+            <input class="join-code-input" id="createTeamInput" maxlength="50" placeholder="Команда Макса" style="letter-spacing:0;text-transform:none;font-size:14px;" onkeydown="if(event.key==='Enter')doCreateTeam()"/>
             <button class="join-code-go" onclick="doCreateTeam()">Создать →</button>
         </div>
     </div>
@@ -1424,7 +1424,7 @@
     <div class="join-code-form" id="joinCodeForm">
         <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:10px;">Введи 6-значный код от создателя команды:</div>
         <div class="join-code-row">
-            <input class="join-code-input" id="joinCodeInput" maxlength="6" placeholder="ABC123" oninput="this.value=this.value.toUpperCase()"/>
+            <input class="join-code-input" id="joinCodeInput" maxlength="6" placeholder="ABC123" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')doJoinByCode()"/>
             <button class="join-code-go" onclick="doJoinByCode()">Войти →</button>
         </div>
     </div>
@@ -2335,15 +2335,63 @@ function toggleCreateForm() {
 
 /* ── Подтвердить создание команды ── */
 function doCreateTeam() {
-    const input = document.getElementById('createTeamInput');
-    const name  = input.value.trim();
-    if (!name) { showToast('Введи название команды'); input.focus(); return; }
+    try {
+        var input = document.getElementById('createTeamInput');
+        if (!input) { showToast('Ошибка: поле не найдено'); return; }
+        var name = input.value.trim();
+        if (!name) { showToast('Введи название команды'); input.focus(); return; }
 
-    document.getElementById('createTeamForm').classList.remove('visible');
-    input.value = '';
+        var form = document.getElementById('createTeamForm');
+        if (form) form.classList.remove('visible');
+        input.value = '';
 
-    createDemoTeam(name);
-    showToast(`✅ Команда «${name}» создана!`);
+        // Убедимся что myTeams — массив
+        if (!Array.isArray(myTeams)) myTeams = [];
+
+        // Генерируем код
+        var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        var code = '';
+        for (var ci = 0; ci < 6; ci++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        // Имя из профиля
+        var myName = 'Ты';
+        if (typeof profile !== 'undefined' && profile && profile.name) {
+            myName = profile.name;
+        }
+
+        // Добавляем команду
+        myTeams.push({
+            code:      code,
+            name:      name,
+            isCreator: true,
+            created:   new Date().toISOString().slice(0, 10),
+            members:   [{
+                name:     myName,
+                streak:   0,
+                checkins: 0,
+                avatar:   '\u26a1',
+                color:    '#667eea',
+                isMe:     true
+            }]
+        });
+
+        // Сохраняем
+        try {
+            localStorage.setItem(TEAMS_KEY, JSON.stringify(myTeams));
+        } catch(saveErr) {
+            showToast('Ошибка сохранения: ' + saveErr.message);
+            return;
+        }
+
+        // Рендерим
+        renderMyTeams();
+        showToast('\u2705 \u041a\u043e\u043c\u0430\u043d\u0434\u0430 \u00ab' + name + '\u00bb \u0441\u043e\u0437\u0434\u0430\u043d\u0430!');
+
+    } catch (err) {
+        showToast('\u041e\u0448\u0438\u0431\u043a\u0430: ' + err.message);
+    }
 }
 
 // ===== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК =====

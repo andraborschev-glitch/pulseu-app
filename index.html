@@ -424,6 +424,131 @@
 
         .weight-input-row button:active { opacity: 0.8; }
 
+        /* ===== ШАГИ ===== */
+        .steps-section {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 14px;
+            border: 1px solid rgba(255,255,255,0.07);
+            margin-bottom: 18px;
+        }
+
+        .steps-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .steps-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .steps-today-val {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .steps-progress-wrap {
+            margin-bottom: 10px;
+        }
+
+        .steps-bar-bg {
+            height: 8px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 99px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .steps-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #34d399, #38bdf8);
+            transition: width 0.5s ease;
+        }
+
+        .steps-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .steps-bar-labels .goal-label { color: rgba(255,255,255,0.45); }
+
+        .steps-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 48px;
+            margin-bottom: 10px;
+        }
+
+        .steps-bar-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .steps-bar {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.4s ease;
+            min-height: 4px;
+        }
+
+        .steps-bar-label {
+            font-size: 9px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .steps-bar-label.today { color: #6ee7b7; }
+
+        .steps-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .steps-input-row input {
+            flex: 1;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 9px 12px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .steps-input-row input::placeholder { color: rgba(255,255,255,0.25); }
+
+        .steps-input-row button {
+            background: linear-gradient(135deg, #34d399, #38bdf8);
+            border: none;
+            border-radius: 10px;
+            padding: 9px 16px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .steps-input-row button:active { opacity: 0.8; }
+
         /* ===== TOAST ===== */
         .toast {
             position: fixed;
@@ -462,11 +587,328 @@
             -webkit-text-fill-color: transparent;
             font-weight: 700;
         }
+
+        /* ===== КНОПКА ПРОФИЛЯ В ШАПКЕ ===== */
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 5px 10px 5px 5px;
+            border-radius: 99px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: background 0.2s;
+            max-width: 160px;
+        }
+
+        .user-chip:active { background: rgba(255,255,255,0.1); }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.75);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ===== ПАНЕЛЬ ПРОФИЛЯ ===== */
+        .profile-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .profile-overlay.open { opacity: 1; pointer-events: all; }
+
+        .profile-panel {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #141428;
+            border-radius: 24px 24px 0 0;
+            padding: 0 0 40px;
+            z-index: 101;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.32,0.72,0,1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .profile-panel.open { transform: translateY(0); }
+
+        .profile-drag {
+            width: 40px;
+            height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 99px;
+            margin: 14px auto 20px;
+        }
+
+        .profile-head {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .profile-avatar-big {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 10px;
+            box-shadow: 0 8px 24px rgba(102,126,234,0.35);
+        }
+
+        .profile-display-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .profile-since {
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .profile-fields {
+            padding: 20px 20px 0;
+        }
+
+        .profile-field-group {
+            margin-bottom: 18px;
+        }
+
+        .profile-field-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .profile-field-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .profile-field {
+            flex: 1;
+        }
+
+        .profile-field input, .profile-field select {
+            width: 100%;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 11px 14px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .profile-field input::placeholder { color: rgba(255,255,255,0.25); }
+        .profile-field select option { background: #141428; }
+
+        .profile-field .field-sub {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 4px;
+            padding-left: 4px;
+        }
+
+        .profile-stat-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .profile-stat {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            border-radius: 14px;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+        }
+
+        .profile-stat .ps-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 4px;
+        }
+
+        .profile-stat .ps-value {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profile-save-btn {
+            display: block;
+            width: calc(100% - 40px);
+            margin: 20px 20px 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+        }
+
+        .profile-save-btn:active { opacity: 0.8; }
+
+        /* ===== ВЫБОР ПРИВЫЧЕК ===== */
+        .habit-picker-section { margin-bottom: 18px; }
+
+        .habit-category-title {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin: 14px 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .habit-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .habit-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 99px;
+            border: 1.5px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.04);
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            cursor: pointer;
+            transition: all 0.18s ease;
+            user-select: none;
+        }
+
+        .habit-chip.selected {
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .habit-chip:active { opacity: 0.7; }
+
+        .habits-limit-note {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
 <div class="toast" id="toast"></div>
+
+<!-- ПРОФИЛЬ ОВЕРЛЕЙ -->
+<div class="profile-overlay" id="profileOverlay" onclick="closeProfile()"></div>
+<div class="profile-panel" id="profilePanel">
+    <div class="profile-drag"></div>
+    <div class="profile-head">
+        <div class="profile-avatar-big" id="profileAvatarBig">?</div>
+        <div class="profile-display-name" id="profileDisplayName">Мой профиль</div>
+        <div class="profile-since" id="profileSince"></div>
+    </div>
+
+    <div class="profile-fields">
+        <div class="profile-stat-row" id="profileStatRow"></div>
+
+        <div class="profile-field-group">
+            <div class="profile-field-label">Как тебя зовут?</div>
+            <div class="profile-field">
+                <input type="text" id="pfName" placeholder="Имя..." maxlength="30"/>
+            </div>
+        </div>
+
+        <div class="profile-field-group">
+            <div class="profile-field-label">Параметры тела</div>
+            <div class="profile-field-row">
+                <div class="profile-field">
+                    <input type="number" id="pfHeight" placeholder="Рост (см)" min="100" max="250"/>
+                    <div class="field-sub">Рост</div>
+                </div>
+                <div class="profile-field">
+                    <input type="number" id="pfAge" placeholder="Возраст" min="1" max="120"/>
+                    <div class="field-sub">Возраст</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-field-group">
+            <div class="profile-field-label">Вес</div>
+            <div class="profile-field-row">
+                <div class="profile-field">
+                    <input type="number" id="pfStartWeight" placeholder="Нач. вес (кг)" min="20" max="300" step="0.1"/>
+                    <div class="field-sub">Начальный</div>
+                </div>
+                <div class="profile-field">
+                    <input type="number" id="pfGoalWeight" placeholder="Цель (кг)" min="20" max="300" step="0.1"/>
+                    <div class="field-sub">Цель</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-field-group">
+            <div class="profile-field-label">Цель на месяц</div>
+            <div class="profile-field">
+                <input type="text" id="pfGoalText" placeholder="Например: похудеть на 3 кг..." maxlength="60"/>
+            </div>
+        </div>
+
+        <div class="habit-picker-section">
+            <div class="profile-field-label">Мои привычки (выбери до 8)</div>
+            <div id="habitPickerWrap"></div>
+            <div class="habits-limit-note" id="habitsLimitNote"></div>
+        </div>
+    </div>
+
+    <button class="profile-save-btn" onclick="saveProfile()">Сохранить профиль</button>
+</div>
 
 <!-- ШАПКА -->
 <div class="header">
@@ -476,6 +918,12 @@
         <div class="month-label" id="monthLabel">—</div>
         <button onclick="changeMonth(1)">›</button>
     </div>
+</div>
+
+<!-- КНОПКА ПРОФИЛЯ -->
+<div class="user-chip" onclick="openProfile()" id="userChip">
+    <div class="user-avatar" id="userAvatarSmall">?</div>
+    <div class="user-name" id="userNameSmall">Профиль</div>
 </div>
 
 <!-- СВОДКА -->
@@ -538,6 +986,27 @@
     </div>
 </div>
 
+<div class="steps-section">
+    <div class="steps-header-row">
+        <div class="steps-title">👟 Шаги</div>
+        <div class="steps-today-val" id="stepsToday">0</div>
+    </div>
+    <div class="steps-progress-wrap">
+        <div class="steps-bar-bg">
+            <div class="steps-bar-fill" id="stepsBarFill" style="width:0%"></div>
+        </div>
+        <div class="steps-bar-labels">
+            <span id="stepsPercent">0%</span>
+            <span class="goal-label">Цель: <span id="stepsGoalLabel">10 000</span> шагов</span>
+        </div>
+    </div>
+    <div class="steps-chart" id="stepsChart"></div>
+    <div class="steps-input-row">
+        <input type="number" id="stepsInput" placeholder="Шаги за сегодня..." min="0" max="99999" step="100"/>
+        <button onclick="saveSteps()">Сохранить</button>
+    </div>
+</div>
+
 <div class="footer">⚡ <span>Twinner</span> · твой цифровой двойник</div>
 
 <script>
@@ -545,13 +1014,47 @@
 //  TWINNER — ТРЕКЕР ПРИВЫЧЕК
 // =============================================
 
-const HABITS = [
-    { id: 'pushups', emoji: '💪', name: 'Отжимания',      color: '#667eea' },
-    { id: 'water',   emoji: '💧', name: 'Выпить воду',    color: '#38bdf8' },
-    { id: 'read',    emoji: '📖', name: 'Почитать книгу', color: '#a78bfa' },
-    { id: 'walk',    emoji: '🚶', name: 'Прогулка 30 мин',color: '#34d399' },
-    { id: 'shower',  emoji: '🚿', name: 'Холодный душ',   color: '#60a5fa' },
+const HABITS_ALL = [
+    // Физическая активность
+    { id: 'morning',    emoji: '🌅', name: 'Зарядка утром',       color: '#f59e0b', cat: '💪 Физическая активность' },
+    { id: 'pushups',    emoji: '💪', name: 'Отжимания',           color: '#667eea', cat: '💪 Физическая активность' },
+    { id: 'squats',     emoji: '🦵', name: 'Приседания',          color: '#8b5cf6', cat: '💪 Физическая активность' },
+    { id: 'plank',      emoji: '⏱️', name: 'Планка 1 мин',        color: '#ec4899', cat: '💪 Физическая активность' },
+    { id: 'walk',       emoji: '🚶', name: 'Прогулка 30 мин',     color: '#34d399', cat: '💪 Физическая активность' },
+    { id: 'yoga',       emoji: '🧘', name: 'Йога / Растяжка',     color: '#a78bfa', cat: '💪 Физическая активность' },
+    { id: 'run',        emoji: '🏃', name: 'Бег / Кардио',        color: '#f97316', cat: '💪 Физическая активность' },
+    // Ментальное здоровье
+    { id: 'meditate',   emoji: '🧘‍♂️', name: 'Медитация 5 мин',   color: '#6ee7b7', cat: '🧠 Ментальное здоровье' },
+    { id: 'read',       emoji: '📖', name: 'Чтение 15 мин',       color: '#60a5fa', cat: '🧠 Ментальное здоровье' },
+    { id: 'gratitude',  emoji: '✍️', name: 'Дневник благодарности',color: '#f472b6', cat: '🧠 Ментальное здоровье' },
+    { id: 'plan',       emoji: '📝', name: 'Планирование дня',    color: '#fbbf24', cat: '🧠 Ментальное здоровье' },
+    { id: 'learn',      emoji: '🧠', name: 'Учить новое слово',   color: '#38bdf8', cat: '🧠 Ментальное здоровье' },
+    // Здоровье и питание
+    { id: 'water',      emoji: '💧', name: 'Выпить 2 л воды',     color: '#22d3ee', cat: '💧 Здоровье и питание' },
+    { id: 'breakfast',  emoji: '🍳', name: 'Завтрак',             color: '#fb923c', cat: '💧 Здоровье и питание' },
+    { id: 'nofastfood', emoji: '🥗', name: 'Обед без фастфуда',   color: '#86efac', cat: '💧 Здоровье и питание' },
+    { id: 'earlydinne', emoji: '🍽️', name: 'Ужин до 20:00',       color: '#fdba74', cat: '💧 Здоровье и питание' },
+    { id: 'sleep',      emoji: '😴', name: 'Сон до 23:00',        color: '#818cf8', cat: '💧 Здоровье и питание' },
+    { id: 'shower',     emoji: '🚿', name: 'Холодный душ',        color: '#7dd3fc', cat: '💧 Здоровье и питание' },
+    // Финансы и дисциплина
+    { id: 'budget',     emoji: '💰', name: 'Записать расходы',    color: '#4ade80', cat: '💰 Финансы и дисциплина' },
+    { id: 'save',       emoji: '🏦', name: 'Отложить 10%',        color: '#34d399', cat: '💰 Финансы и дисциплина' },
+    { id: 'goals',      emoji: '🎯', name: 'Проверить цели',      color: '#f87171', cat: '💰 Финансы и дисциплина' },
+    { id: 'air',        emoji: '🌬️', name: 'Проветрить комнату',  color: '#a5f3fc', cat: '💰 Финансы и дисциплина' },
+    // Социальные привычки
+    { id: 'friend',     emoji: '📞', name: 'Написать другу',      color: '#c084fc', cat: '🤝 Социальные привычки' },
+    { id: 'smile',      emoji: '😊', name: 'Улыбнуться прохожему',color: '#fde68a', cat: '🤝 Социальные привычки' },
+    { id: 'thanks',     emoji: '🙏', name: 'Сказать спасибо',     color: '#fca5a5', cat: '🤝 Социальные привычки' },
 ];
+
+const MAX_HABITS = 8;
+const DEFAULT_HABIT_IDS = ['pushups', 'water', 'read', 'walk', 'shower'];
+
+function getActiveHabits() {
+    const sel = profile.selectedHabits;
+    if (!sel || sel.length === 0) return HABITS_ALL.filter(h => DEFAULT_HABIT_IDS.includes(h.id));
+    return HABITS_ALL.filter(h => sel.includes(h.id));
+}
 
 const MONTHS_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь',
                    'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
@@ -564,6 +1067,8 @@ viewDate.setDate(1);
 // weightLog[YYYY-MM-DD] = number
 let data = {};
 let weightLog = {};
+let stepsLog = {};
+const STEPS_GOAL = 10000;
 
 function getMonthKey(d) {
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
@@ -585,12 +1090,13 @@ function load() {
             const p = JSON.parse(saved);
             data = p.data || {};
             weightLog = p.weightLog || {};
+            stepsLog = p.stepsLog || {};
         } catch(e) {}
     }
 }
 
 function save() {
-    localStorage.setItem('twinner_v2', JSON.stringify({ data, weightLog }));
+    localStorage.setItem('twinner_v2', JSON.stringify({ data, weightLog, stepsLog }));
 }
 
 function toggleHabit(habitId, day) {
@@ -611,6 +1117,7 @@ function render() {
     renderSummary();
     renderWeekly();
     renderWeight();
+    renderSteps();
 }
 
 function renderMonthLabel() {
@@ -641,7 +1148,7 @@ function renderGrid() {
     const body = document.getElementById('gridBody');
     let bodyHtml = '';
 
-    HABITS.forEach(habit => {
+    getActiveHabits().forEach(habit => {
         bodyHtml += `<tr class="habit-row">`;
         bodyHtml += `<td><div class="habit-name-cell"><span class="habit-emoji">${habit.emoji}</span><span class="habit-title">${habit.name}</span></div></td>`;
 
@@ -687,7 +1194,7 @@ function renderSummary() {
     const maxDay = isCurrentMonth ? today.getDate() : days;
 
     let total = 0, done = 0;
-    HABITS.forEach(h => {
+    getActiveHabits().forEach(h => {
         for (let d = 1; d <= maxDay; d++) {
             total++;
             if (data[mk]?.[h.id]?.[d]) done++;
@@ -709,7 +1216,7 @@ function renderSummary() {
     while (true) {
         const cmk = getMonthKey(checkDate);
         const cd = checkDate.getDate();
-        const allDone = HABITS.every(h => data[cmk]?.[h.id]?.[cd] === true);
+        const allDone = getActiveHabits().every(h => data[cmk]?.[h.id]?.[cd] === true);
         if (!allDone) break;
         streak++;
         checkDate.setDate(checkDate.getDate() - 1);
@@ -746,7 +1253,7 @@ function renderWeekly() {
         for (let d = w.start; d <= w.end; d++) {
             const isFuture = isCurrentMonth && d > today.getDate();
             if (isFuture) continue;
-            HABITS.forEach(h => {
+            getActiveHabits().forEach(h => {
                 total++;
                 if (data[mk]?.[h.id]?.[d]) done++;
             });
@@ -814,6 +1321,69 @@ function renderWeight() {
     }).join('');
 }
 
+function saveSteps() {
+    const input = document.getElementById('stepsInput');
+    const val = parseInt(input.value, 10);
+    if (isNaN(val) || val < 0) return;
+    stepsLog[getTodayStr()] = val;
+    // Храним 30 дней
+    const keys = Object.keys(stepsLog).sort();
+    if (keys.length > 30) keys.slice(0, keys.length - 30).forEach(k => delete stepsLog[k]);
+    input.value = ''; input.blur();
+    save();
+    renderSteps();
+    if (val >= STEPS_GOAL) showToast('🎉 Цель по шагам достигнута!');
+    else showToast('👟 Шаги сохранены!');
+}
+
+document.getElementById('stepsInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveSteps();
+});
+
+function renderSteps() {
+    const today = getTodayStr();
+    const todayVal = stepsLog[today] || 0;
+    const pct = Math.min(100, Math.round((todayVal / STEPS_GOAL) * 100));
+
+    document.getElementById('stepsToday').textContent = todayVal.toLocaleString('ru-RU');
+    document.getElementById('stepsBarFill').style.width = pct + '%';
+    document.getElementById('stepsPercent').textContent = pct + '%';
+
+    if (todayVal >= STEPS_GOAL) {
+        document.getElementById('stepsBarFill').style.background = 'linear-gradient(90deg, #34d399, #6ee7b7)';
+        document.getElementById('stepsGoalLabel').textContent = '10 000 ✓';
+    } else {
+        document.getElementById('stepsBarFill').style.background = 'linear-gradient(90deg, #34d399, #38bdf8)';
+        document.getElementById('stepsGoalLabel').textContent = '10 000';
+    }
+
+    // Мини-график (последние 7 дней)
+    const chart = document.getElementById('stepsChart');
+    const keys = Object.keys(stepsLog).sort().slice(-7);
+    if (keys.length === 0) {
+        chart.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,0.2);margin:auto;">Нет данных</div>';
+        return;
+    }
+    const vals = keys.map(k => stepsLog[k]);
+    const maxV = Math.max(...vals, STEPS_GOAL);
+
+    chart.innerHTML = keys.map(k => {
+        const v = stepsLog[k];
+        const h = Math.max(4, Math.round((v / maxV) * 40));
+        const d = new Date(k);
+        const label = `${d.getDate()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+        const isT = k === today;
+        const reachedGoal = v >= STEPS_GOAL;
+        const color = reachedGoal ? '#34d399' : (isT ? '#38bdf8' : 'rgba(255,255,255,0.15)');
+        const valLabel = v >= 1000 ? `${(v/1000).toFixed(1)}k` : String(v);
+        return `<div class="steps-bar-col">
+            <div style="font-size:9px;color:${isT?'#6ee7b7':'rgba(255,255,255,0.35)'};margin-bottom:2px;">${valLabel}</div>
+            <div class="steps-bar" style="height:${h}px;background:${color};"></div>
+            <div class="steps-bar-label ${isT?'today':''}">${label}</div>
+        </div>`;
+    }).join('');
+}
+
 function saveWeight() {
     const input = document.getElementById('weightInput');
     const val = parseFloat(input.value.replace(',', '.'));
@@ -846,7 +1416,176 @@ function showToast(text) {
     toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
 }
 
+// ===== ПРОФИЛЬ =====
+let profile = {};
+
+function loadProfile() {
+    try { profile = JSON.parse(localStorage.getItem('twinner_profile') || '{}'); } catch(e) { profile = {}; }
+}
+
+function renderHabitPicker() {
+    const selected = new Set(profile.selectedHabits || DEFAULT_HABIT_IDS);
+    // Группируем по категории
+    const cats = {};
+    HABITS_ALL.forEach(h => {
+        if (!cats[h.cat]) cats[h.cat] = [];
+        cats[h.cat].push(h);
+    });
+
+    let html = '';
+    Object.entries(cats).forEach(([cat, habits]) => {
+        html += `<div class="habit-category-title">${cat}</div><div class="habit-chips">`;
+        habits.forEach(h => {
+            const isSel = selected.has(h.id);
+            const style = isSel ? `background:${h.color}22;border-color:${h.color};color:#fff;` : '';
+            html += `<div class="habit-chip ${isSel ? 'selected' : ''}" data-id="${h.id}"
+                style="${style}" onclick="toggleHabitChip(this,'${h.color}')">
+                ${h.emoji} ${h.name}
+            </div>`;
+        });
+        html += '</div>';
+    });
+
+    document.getElementById('habitPickerWrap').innerHTML = html;
+    updateHabitLimitNote();
+}
+
+function toggleHabitChip(el, color) {
+    const isSel = el.classList.contains('selected');
+    const totalSel = document.querySelectorAll('.habit-chip.selected').length;
+    if (!isSel && totalSel >= MAX_HABITS) {
+        showToast(`Максимум ${MAX_HABITS} привычек`);
+        return;
+    }
+    el.classList.toggle('selected');
+    if (el.classList.contains('selected')) {
+        el.style.background = color + '22';
+        el.style.borderColor = color;
+        el.style.color = '#fff';
+    } else {
+        el.style.background = '';
+        el.style.borderColor = '';
+        el.style.color = '';
+    }
+    updateHabitLimitNote();
+}
+
+function updateHabitLimitNote() {
+    const n = document.querySelectorAll('.habit-chip.selected').length;
+    const note = document.getElementById('habitsLimitNote');
+    if (note) note.textContent = `Выбрано: ${n} из ${MAX_HABITS}`;
+}
+
+function saveProfile() {
+    profile.name        = document.getElementById('pfName').value.trim();
+    profile.height      = document.getElementById('pfHeight').value;
+    profile.age         = document.getElementById('pfAge').value;
+    profile.startWeight = document.getElementById('pfStartWeight').value;
+    profile.goalWeight  = document.getElementById('pfGoalWeight').value;
+    profile.goalText    = document.getElementById('pfGoalText').value.trim();
+    // Собираем выбранные привычки
+    profile.selectedHabits = Array.from(
+        document.querySelectorAll('.habit-chip.selected')
+    ).map(el => el.dataset.id);
+    if (!profile.since) profile.since = getTodayStr();
+    localStorage.setItem('twinner_profile', JSON.stringify(profile));
+    renderProfile();
+    render(); // перестраиваем сетку с новыми привычками
+    closeProfile();
+    showToast('✅ Профиль сохранён!');
+}
+
+function openProfile() {
+    document.getElementById('pfName').value        = profile.name || '';
+    document.getElementById('pfHeight').value      = profile.height || '';
+    document.getElementById('pfAge').value         = profile.age || '';
+    document.getElementById('pfStartWeight').value = profile.startWeight || '';
+    document.getElementById('pfGoalWeight').value  = profile.goalWeight || '';
+    document.getElementById('pfGoalText').value    = profile.goalText || '';
+
+    document.getElementById('profileOverlay').classList.add('open');
+    document.getElementById('profilePanel').classList.add('open');
+    renderProfilePanel();
+    renderHabitPicker();
+}
+
+function closeProfile() {
+    document.getElementById('profileOverlay').classList.remove('open');
+    document.getElementById('profilePanel').classList.remove('open');
+}
+
+function getInitials(name) {
+    if (!name) return '👤';
+    return name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+}
+
+function renderProfile() {
+    // Пробуем взять имя из Telegram WebApp
+    let tgName = '';
+    try {
+        const tg = window.Telegram?.WebApp?.initDataUnsafe?.user;
+        if (tg) tgName = [tg.first_name, tg.last_name].filter(Boolean).join(' ');
+    } catch(e) {}
+
+    const displayName = profile.name || tgName || 'Мой профиль';
+    const initials = getInitials(profile.name || tgName);
+
+    // Шапка chip
+    document.getElementById('userAvatarSmall').textContent = initials;
+    document.getElementById('userNameSmall').textContent   = displayName.split(' ')[0] || 'Профиль';
+
+    // Большой аватар в панели
+    document.getElementById('profileAvatarBig').textContent    = initials;
+    document.getElementById('profileDisplayName').textContent  = displayName;
+
+    // Дата регистрации
+    if (profile.since) {
+        const d = new Date(profile.since);
+        const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+        document.getElementById('profileSince').textContent = `В Twinner с ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    }
+}
+
+function renderProfilePanel() {
+    renderProfile();
+    // Статистика внутри панели
+    const today = getTodayStr();
+    const currentWeight = weightLog[today] || (Object.keys(weightLog).length ? weightLog[Object.keys(weightLog).sort().pop()] : null);
+    const startW = parseFloat(profile.startWeight);
+    const goalW  = parseFloat(profile.goalWeight);
+    const curW   = parseFloat(currentWeight);
+
+    let stats = [];
+
+    if (profile.height) stats.push({ label: 'Рост', value: profile.height + ' см' });
+    if (profile.age)    stats.push({ label: 'Возраст', value: profile.age + ' лет' });
+    if (startW)         stats.push({ label: 'Нач. вес', value: startW + ' кг' });
+    if (curW)           stats.push({ label: 'Сейчас', value: curW + ' кг' });
+    if (goalW)          stats.push({ label: 'Цель', value: goalW + ' кг' });
+
+    // Прогресс к цели по весу
+    if (startW && goalW && curW) {
+        const total = Math.abs(startW - goalW);
+        const done  = Math.abs(startW - curW);
+        const pct   = total > 0 ? Math.min(100, Math.round((done / total) * 100)) : 0;
+        stats.push({ label: 'К цели', value: pct + '%' });
+    }
+
+    if (profile.goalText) stats.push({ label: '🎯 Цель', value: profile.goalText, full: true });
+
+    const row = document.getElementById('profileStatRow');
+    if (stats.length === 0) { row.innerHTML = ''; return; }
+
+    row.innerHTML = stats.map(s => `
+        <div class="profile-stat" ${s.full ? 'style="flex:100%;text-align:left;"' : ''}>
+            <div class="ps-label">${s.label}</div>
+            <div class="ps-value" style="${s.full ? 'font-size:13px;' : ''}">${s.value}</div>
+        </div>`).join('');
+}
+
 load();
+loadProfile();
+renderProfile();
 render();
 </script>
 </body>

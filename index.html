@@ -2210,8 +2210,53 @@ function doJoinByCode() {
 
 /* ── Скопировать код команды ── */
 function copyTeamCode(code) {
-    navigator.clipboard?.writeText(code).catch(() => {});
-    showToast(`Код ${code} скопирован!`);
+    var text = code;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(function() {});
+    }
+    showToast('Код ' + code + ' скопирован!');
+}
+
+/* ── Скопировать приглашение в команду ── */
+function inviteToTeam(code) {
+    var botName = getBotUsername();
+    var text = 'Привет! Присоединяйся к моей команде в Twinner 💪\n\n'
+             + '1. Открой бота: @' + botName + '\n'
+             + '2. Напиши команду: /joingroup ' + code + '\n\n'
+             + 'Будем вместе следить за прогрессом!';
+
+    var copied = false;
+
+    // Способ 1: Clipboard API (современные браузеры)
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            showToast('📋 Приглашение скопировано! Отправь другу в Telegram');
+        }).catch(function() {
+            fallbackCopy(text);
+        });
+        return;
+    }
+
+    // Способ 2: execCommand (старые браузеры / некоторые WebView)
+    fallbackCopy(text);
+}
+
+function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+        document.execCommand('copy');
+        showToast('📋 Приглашение скопировано! Отправь другу в Telegram');
+    } catch(e) {
+        // Ничего не сработало — показываем код явно
+        showToast('Код команды: ' + text.match(/\/joingroup (\w+)/)?.[1] || '?');
+    }
+    document.body.removeChild(ta);
 }
 
 /* ── Добавить тестового участника ── */
@@ -2236,12 +2281,28 @@ function addDemoMember(teamIdx) {
     showToast(n + ' добавлен в команду');
 }
 
-/* ── Удалить команду ── */
+/* ── Удалить команду — двойное подтверждение ── */
 function deleteTeam(idx) {
+    var hint = document.getElementById('delete-hint-' + idx);
+    if (!hint) return;
+    // Первый клик — показываем подтверждение вместо кнопки
+    hint.innerHTML = '<span style="color:rgba(255,255,255,0.5);font-size:12px;">Удалить?&nbsp;</span>'
+        + '<span onclick="confirmDeleteTeam(' + idx + ')" style="cursor:pointer;color:#ef4444;font-weight:700;">Да</span>'
+        + '&nbsp;·&nbsp;'
+        + '<span onclick="cancelDeleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(255,255,255,0.4);">Нет</span>';
+}
+
+function confirmDeleteTeam(idx) {
     myTeams.splice(idx, 1);
     saveTeams();
     renderMyTeams();
     showToast('Команда удалена');
+}
+
+function cancelDeleteTeam(idx) {
+    var hint = document.getElementById('delete-hint-' + idx);
+    if (!hint) return;
+    hint.innerHTML = '<span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span>';
 }
 
 /* ── Создать команду локально ── */
@@ -2320,11 +2381,9 @@ function renderMyTeams() {
             + '</div>'
             + rows
             + '<div class="invite-hint">'
-            +   '<span onclick="openTgLink(\'' + inviteLink + '\')" style="color:#a5b4fc;cursor:pointer;">🔗 Пригласить</span>'
+            +   '<span onclick="inviteToTeam(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">📋 Скопировать приглашение</span>'
             +   ' &nbsp;·&nbsp; '
-            +   '<span onclick="addDemoMember(' + idx + ')" style="cursor:pointer;color:rgba(255,255,255,0.4);">+ участник</span>'
-            +   ' &nbsp;·&nbsp; '
-            +   '<span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span>'
+            +   '<span id="delete-hint-' + idx + '"><span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span></span>'
             + '</div>'
             + '</div>';
     }

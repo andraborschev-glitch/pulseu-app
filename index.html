@@ -12,7 +12,193 @@
             background: #0f0f1a;
             color: #fff;
             min-height: 100vh;
-            padding: 16px 12px 32px;
+            padding: 16px 12px 90px;
+        }
+
+        /* ===== НИЖНЯЯ НАВИГАЦИЯ ===== */
+        .tab-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(15,15,26,0.97);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255,255,255,0.07);
+            display: flex;
+            z-index: 200;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .tab-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 10px 0 12px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.35);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: color 0.2s;
+            border: none;
+            background: none;
+        }
+
+        .tab-btn .tab-icon { font-size: 22px; line-height: 1; }
+        .tab-btn.active { color: #a5b4fc; }
+
+        /* ===== ВКЛАДКИ ===== */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ===== СООБЩЕСТВО ===== */
+        .community-header {
+            margin-bottom: 18px;
+        }
+
+        .community-title {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .community-sub {
+            font-size: 13px;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .my-groups-section { margin-bottom: 22px; }
+
+        .section-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .my-groups-empty {
+            font-size: 13px;
+            color: rgba(255,255,255,0.25);
+            text-align: center;
+            padding: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 14px;
+            border: 1px dashed rgba(255,255,255,0.08);
+        }
+
+        .my-group-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px 7px 10px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 6px 8px 0;
+            cursor: pointer;
+        }
+
+        .my-group-chip .leave-btn {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-left: 2px;
+        }
+
+        .groups-category { margin-bottom: 22px; }
+
+        .cat-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .group-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 14px;
+            border: 1px solid rgba(255,255,255,0.07);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .group-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .group-info { flex: 1; min-width: 0; }
+
+        .group-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-desc {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .group-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .group-members {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .group-joined-badge {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4ade80;
+            background: rgba(74,222,128,0.1);
+            border-radius: 99px;
+            padding: 2px 8px;
+        }
+
+        .join-btn {
+            flex-shrink: 0;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #fff;
+            transition: opacity 0.2s;
+        }
+
+        .join-btn:active { opacity: 0.75; }
+        .join-btn.joined {
+            background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.4);
         }
 
         /* ===== ШАПКА ===== */
@@ -910,6 +1096,19 @@
     <button class="profile-save-btn" onclick="saveProfile()">Сохранить профиль</button>
 </div>
 
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
+<div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('habits')" id="tab-btn-habits">
+        <span class="tab-icon">📋</span>Привычки
+    </button>
+    <button class="tab-btn" onclick="switchTab('community')" id="tab-btn-community">
+        <span class="tab-icon">🤝</span>Сообщество
+    </button>
+</div>
+
+<!-- ВКЛАДКА: ПРИВЫЧКИ -->
+<div class="tab-content active" id="tab-habits">
+
 <!-- ШАПКА -->
 <div class="header">
     <div class="logo">⚡ TWINNER</div>
@@ -1006,6 +1205,29 @@
         <button onclick="saveSteps()">Сохранить</button>
     </div>
 </div>
+
+</div><!-- /tab-habits -->
+
+<!-- ВКЛАДКА: СООБЩЕСТВО -->
+<div class="tab-content" id="tab-community">
+
+    <div class="community-header">
+        <div class="community-title">🤝 Сообщество</div>
+        <div class="community-sub">Вступай в группы по интересам и развивайся вместе</div>
+    </div>
+
+    <!-- МОИ ГРУППЫ -->
+    <div class="my-groups-section">
+        <div class="section-label">Мои группы</div>
+        <div id="myGroupsWrap">
+            <div class="my-groups-empty">Ты ещё не вступил ни в одну группу</div>
+        </div>
+    </div>
+
+    <!-- ГРУППЫ ПО КАТЕГОРИЯМ -->
+    <div id="allGroupsWrap"></div>
+
+</div><!-- /tab-community -->
 
 <div class="footer">⚡ <span>Twinner</span> · твой цифровой двойник</div>
 
@@ -1587,6 +1809,137 @@ load();
 loadProfile();
 renderProfile();
 render();
+
+// =============================================
+//  СООБЩЕСТВО
+// =============================================
+
+const GROUPS = [
+    {
+        cat: '💪 Физическая активность',
+        items: [
+            { id: 'g_workout',  emoji: '💪', name: 'Тренировки каждый день', desc: 'Делимся результатами, программами и мотивируем друг друга', members: 1243, color: '#667eea', link: 'https://t.me/twinner_workout' },
+            { id: 'g_running',  emoji: '🏃', name: 'Бегуны Twinner',         desc: 'Клуб любителей бега: маршруты, советы, километраж',         members: 876,  color: '#f97316', link: 'https://t.me/twinner_running' },
+            { id: 'g_yoga',     emoji: '🧘', name: 'Йога и растяжка',        desc: 'Утренние практики, видео-гайды, гибкость и спокойствие',     members: 634,  color: '#a78bfa', link: 'https://t.me/twinner_yoga' },
+        ]
+    },
+    {
+        cat: '🧠 Ментальное здоровье',
+        items: [
+            { id: 'g_reading',  emoji: '📖', name: 'Книжный клуб',       desc: 'Рекомендуем книги, обсуждаем, строим читательские серии',   members: 1581, color: '#60a5fa', link: 'https://t.me/twinner_books' },
+            { id: 'g_meditate', emoji: '🧘‍♂️', name: 'Медитация',         desc: 'Практики осознанности, гайды и ежедневные чекины',          members: 722,  color: '#6ee7b7', link: 'https://t.me/twinner_meditation' },
+            { id: 'g_journal',  emoji: '✍️', name: 'Дневник благодарности', desc: 'Записываем хорошее, замечаем прогресс, поддерживаем',    members: 489,  color: '#f472b6', link: 'https://t.me/twinner_journal' },
+        ]
+    },
+    {
+        cat: '💧 Здоровье и питание',
+        items: [
+            { id: 'g_water',    emoji: '💧', name: 'Водный баланс',   desc: '2 литра в день — вместе проще! Трекаем воду и делимся',      members: 2104, color: '#22d3ee', link: 'https://t.me/twinner_water' },
+            { id: 'g_nutrition',emoji: '🥗', name: 'Правильное питание', desc: 'Рецепты, меню, лайфхаки без фастфуда и срывов',           members: 1398, color: '#86efac', link: 'https://t.me/twinner_nutrition' },
+            { id: 'g_sleep',    emoji: '😴', name: 'Клуб здорового сна', desc: 'Режим, гигиена сна, делимся лайфхаками для отдыха',        members: 567,  color: '#818cf8', link: 'https://t.me/twinner_sleep' },
+        ]
+    },
+    {
+        cat: '💰 Финансы и дисциплина',
+        items: [
+            { id: 'g_budget',   emoji: '💰', name: 'Финансовая дисциплина', desc: 'Бюджет, сбережения, цели — развиваем финансовые привычки', members: 943, color: '#4ade80', link: 'https://t.me/twinner_finance' },
+            { id: 'g_goals',    emoji: '🎯', name: 'Цели и результаты',     desc: 'Ставим цели, отчитываемся, держим друг друга в тонусе',   members: 1127, color: '#f87171', link: 'https://t.me/twinner_goals' },
+        ]
+    },
+    {
+        cat: '🤝 Социальные привычки',
+        items: [
+            { id: 'g_social',   emoji: '😊', name: 'Добрые дела',  desc: 'Благодарность, улыбки, маленькие доброты каждый день',         members: 412,  color: '#fde68a', link: 'https://t.me/twinner_kindness' },
+        ]
+    },
+];
+
+let joinedGroups = new Set();
+
+function loadJoined() {
+    try {
+        const s = localStorage.getItem('twinner_groups');
+        if (s) joinedGroups = new Set(JSON.parse(s));
+    } catch(e) {}
+}
+
+function saveJoined() {
+    localStorage.setItem('twinner_groups', JSON.stringify([...joinedGroups]));
+}
+
+function toggleGroup(id, link) {
+    if (joinedGroups.has(id)) {
+        joinedGroups.delete(id);
+        saveJoined();
+        renderCommunity();
+        showToast('Вышел из группы');
+    } else {
+        joinedGroups.add(id);
+        saveJoined();
+        renderCommunity();
+        showToast('✅ Вступил в группу!');
+        // Открываем Telegram-группу
+        setTimeout(() => { window.open(link, '_blank'); }, 400);
+    }
+}
+
+function renderCommunity() {
+    // МОИ ГРУППЫ
+    const myWrap = document.getElementById('myGroupsWrap');
+    if (joinedGroups.size === 0) {
+        myWrap.innerHTML = '<div class="my-groups-empty">Ты ещё не вступил ни в одну группу</div>';
+    } else {
+        const allItems = GROUPS.flatMap(g => g.items);
+        myWrap.innerHTML = [...joinedGroups].map(id => {
+            const g = allItems.find(x => x.id === id);
+            if (!g) return '';
+            return `<span class="my-group-chip" style="background:${g.color}22;border:1px solid ${g.color}44;"
+                onclick="toggleGroup('${g.id}','${g.link}')">
+                ${g.emoji} ${g.name}
+                <span class="leave-btn">✕</span>
+            </span>`;
+        }).join('');
+    }
+
+    // ВСЕ ГРУППЫ
+    const allWrap = document.getElementById('allGroupsWrap');
+    allWrap.innerHTML = GROUPS.map(cat => `
+        <div class="groups-category">
+            <div class="cat-title">${cat.cat}</div>
+            ${cat.items.map(g => {
+                const joined = joinedGroups.has(g.id);
+                return `<div class="group-card">
+                    <div class="group-icon" style="background:${g.color}20;">${g.emoji}</div>
+                    <div class="group-info">
+                        <div class="group-name">${g.name}</div>
+                        <div class="group-desc">${g.desc}</div>
+                        <div class="group-meta">
+                            <span class="group-members">👥 ${g.members.toLocaleString('ru-RU')} участников</span>
+                            ${joined ? '<span class="group-joined-badge">✓ Вступил</span>' : ''}
+                        </div>
+                    </div>
+                    <button class="join-btn ${joined ? 'joined' : ''}"
+                        style="${joined ? '' : `background:${g.color};`}"
+                        onclick="toggleGroup('${g.id}','${g.link}')">
+                        ${joined ? 'Выйти' : 'Войти'}
+                    </button>
+                </div>`;
+            }).join('')}
+        </div>
+    `).join('');
+}
+
+// ===== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК =====
+function switchTab(name) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    document.getElementById('tab-btn-' + name).classList.add('active');
+    if (name === 'community') renderCommunity();
+    window.scrollTo(0, 0);
+}
+
+loadJoined();
 </script>
 </body>
 </html>

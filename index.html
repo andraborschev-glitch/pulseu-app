@@ -1403,12 +1403,21 @@
 
     <!-- Кнопки действий -->
     <div class="team-actions">
-        <button class="team-action-btn create" onclick="openCreateTeam()">
+        <button class="team-action-btn create" onclick="toggleCreateForm()">
             <span class="btn-icon">➕</span>Создать команду
         </button>
         <button class="team-action-btn join-code" onclick="toggleJoinCodeForm()">
             <span class="btn-icon">🔗</span>Войти по коду
         </button>
+    </div>
+
+    <!-- Форма создания команды -->
+    <div class="join-code-form" id="createTeamForm">
+        <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:10px;">Название твоей команды:</div>
+        <div class="join-code-row">
+            <input class="join-code-input" id="createTeamInput" maxlength="50" placeholder="Команда Макса" style="letter-spacing:0;text-transform:none;font-size:14px;"/>
+            <button class="join-code-go" onclick="doCreateTeam()">Создать →</button>
+        </div>
     </div>
 
     <!-- Форма входа по коду -->
@@ -2171,6 +2180,7 @@ function getBotUsername() {
 /* ── Показать/скрыть форму ввода кода ── */
 function toggleJoinCodeForm() {
     const form = document.getElementById('joinCodeForm');
+    document.getElementById('createTeamForm').classList.remove('visible');
     form.classList.toggle('visible');
     if (form.classList.contains('visible')) {
         document.getElementById('joinCodeInput').focus();
@@ -2311,22 +2321,28 @@ function renderMyTeams() {
     }).join('');
 }
 
-/* ── Перехватить создание команды: если нет бота — создаём локально ── */
-function openCreateTeam() {
-    const name = prompt('Название команды:');
-    if (!name || !name.trim()) return;
-    const n = name.trim();
-
-    // Если мы внутри Telegram WebApp — открываем бота
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-        const botUrl = `https://t.me/${getBotUsername()}`;
-        window.open(botUrl, '_blank');
-        showToast(`Напиши боту: /newgroup ${n}`);
-    } else {
-        // Вне Telegram — создаём локально (демо-режим)
-        createDemoTeam(n);
-        showToast(`Команда «${n}» создана!`);
+/* ── Показать/скрыть форму создания команды ── */
+function toggleCreateForm() {
+    const form = document.getElementById('createTeamForm');
+    const joinForm = document.getElementById('joinCodeForm');
+    joinForm.classList.remove('visible');
+    form.classList.toggle('visible');
+    if (form.classList.contains('visible')) {
+        document.getElementById('createTeamInput').focus();
     }
+}
+
+/* ── Подтвердить создание команды ── */
+function doCreateTeam() {
+    const input = document.getElementById('createTeamInput');
+    const name  = input.value.trim();
+    if (!name) { showToast('Введи название команды'); input.focus(); return; }
+
+    document.getElementById('createTeamForm').classList.remove('visible');
+    input.value = '';
+
+    createDemoTeam(name);
+    showToast(`✅ Команда «${name}» создана!`);
 }
 
 // ===== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК =====

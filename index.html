@@ -2456,9 +2456,7 @@ function getActiveHabits() {
     const base = (!sel || sel.length === 0)
         ? HABITS_ALL.filter(h => DEFAULT_HABIT_IDS.includes(h.id))
         : HABITS_ALL.filter(h => sel.includes(h.id));
-    const custom = (profile.customHabits || []).filter(h =>
-        !sel || sel.length === 0 ? true : sel.includes(h.id)
-    );
+    const custom = profile.customHabits || [];
     return [...base, ...custom];
 }
 

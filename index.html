@@ -3986,9 +3986,53 @@ function switchTab(name) {
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     document.getElementById('tab-btn-' + name).classList.add('active');
-    if (name === 'community') { renderCommunity(); renderMyTeams(); }
+    if (name === 'community') { renderCommunity(); renderMyTeams(); syncAllTeams(); }
     if (name === 'twin') { renderTwin(); }
     window.scrollTo(0, 0);
+}
+
+var API_BASE = 'https://a4a825a6-2e61-430d-9424-18d92f47e326-00-1qqslt78zptw1.pike.replit.dev';
+
+function syncAllTeams() {
+    if (!myTeams || !myTeams.length) return;
+    myTeams.forEach(function(team, idx) {
+        fetch(API_BASE + '/api/groups/' + team.code)
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(data) {
+                if (!data || !data.members) return;
+                var changed = false;
+                // Добавляем новых участников которых нет локально
+                data.members.forEach(function(srv) {
+                    var existing = myTeams[idx].members.find(function(m) {
+                        return m.userId === srv.userId || (m.isMe && srv.userId === String(srv.userId));
+                    });
+                    if (!existing) {
+                        myTeams[idx].members.push({
+                            userId:   srv.userId,
+                            name:     'Участник',
+                            streak:   srv.streak,
+                            checkins: srv.checkins,
+                            avatar:   '👤',
+                            color:    '#8b5cf6',
+                            isMe:     false
+                        });
+                        changed = true;
+                    } else {
+                        // Обновляем статистику
+                        if (existing.streak !== srv.streak || existing.checkins !== srv.checkins) {
+                            existing.streak   = srv.streak;
+                            existing.checkins = srv.checkins;
+                            changed = true;
+                        }
+                    }
+                });
+                if (changed) {
+                    saveTeams();
+                    renderMyTeams();
+                }
+            })
+            .catch(function() {});
+    });
 }
 
 // =============================================

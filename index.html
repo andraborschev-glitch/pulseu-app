@@ -3622,11 +3622,10 @@ function copyTeamCode(code) {
 function inviteToTeam(code) {
     var botName = getBotUsername();
     var link = 'https://t.me/' + botName + '?start=joingroup_' + code;
-    var text = 'Присоединяйся к моей команде в Twinner 💪\n\nНажми ссылку и сразу вступай 👇\n' + link;
+    var msgText = 'Привет! Присоединяйся к моей команде в Twinner 💪 Нажми ссылку и сразу вступай.\n\nБудем вместе следить за прогрессом!';
 
-    // Telegram Share — открывает диалог пересылки прямо в Telegram
     var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(link)
-                 + '&text=' + encodeURIComponent('Присоединяйся к моей команде в Twinner 💪 Нажми ссылку и сразу вступай!');
+                 + '&text=' + encodeURIComponent(msgText);
     openTgLink(shareUrl);
 }
 

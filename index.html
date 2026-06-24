@@ -3799,6 +3799,9 @@ function renderMyTeams() {
 
         var inviteLink = 'https://t.me/' + getBotUsername() + '?start=joingroup_' + team.code;
 
+        var safeName = team.name.replace(/[^A-Za-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 25) || 'Team';
+        var regLink = 'https://t.me/' + getBotUsername() + '?start=regteam_' + team.code + '_' + safeName;
+
         html += '<div class="team-card">'
             + '<div class="team-card-header">'
             +   '<div>'
@@ -3812,6 +3815,8 @@ function renderMyTeams() {
             +   '<span onclick="inviteToTeam(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">📨 Поделиться</span>'
             +   ' &nbsp;·&nbsp; '
             +   '<span onclick="copyInviteLink(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">🔗 Скопировать ссылку</span>'
+            +   ' &nbsp;·&nbsp; '
+            +   '<span onclick="openTgLink(\'' + regLink + '\')" style="color:#34d399;cursor:pointer;font-weight:700;" title="Зарегистрировать в боте чтобы invite-ссылка работала">🤖 Регистрировать</span>'
             +   ' &nbsp;·&nbsp; '
             +   (team.isCreator !== false
                     ? '<span id="delete-hint-' + idx + '"><span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span></span>'
@@ -3957,10 +3962,18 @@ function doCreateTeam() {
 
         // Рендерим
         renderMyTeams();
-        showToast('\u2705 \u041a\u043e\u043c\u0430\u043d\u0434\u0430 \u00ab' + name + '\u00bb \u0441\u043e\u0437\u0434\u0430\u043d\u0430!');
+        showToast('✅ Команда «' + name + '» создана!');
+
+        // Регистрируем команду в боте через deep link
+        // Telegram start param: только [A-Za-z0-9_-], макс 64 символа — кириллицу убираем
+        var safeName = name.replace(/[^A-Za-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 25) || 'Team';
+        var regLink = 'https://t.me/' + getBotUsername()
+                    + '?start=regteam_' + code + '_' + safeName;
+        // Открываем бот — пользователь нажмёт START, команда зарегистрируется
+        openTgLink(regLink);
 
     } catch (err) {
-        showToast('\u041e\u0448\u0438\u0431\u043a\u0430: ' + err.message);
+        showToast('Ошибка: ' + err.message);
     }
 }
 

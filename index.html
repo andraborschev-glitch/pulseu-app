@@ -3618,28 +3618,30 @@ function copyTeamCode(code) {
     showToast('Код ' + code + ' скопирован!');
 }
 
-/* ── Скопировать приглашение в команду ── */
+/* ── Поделиться приглашением через Telegram ── */
 function inviteToTeam(code) {
     var botName = getBotUsername();
-    var text = 'Привет! Присоединяйся к моей команде в Twinner 💪\n\n'
-             + '1. Открой бота: @' + botName + '\n'
-             + '2. Напиши команду: /joingroup ' + code + '\n\n'
-             + 'Будем вместе следить за прогрессом!';
+    var link = 'https://t.me/' + botName + '?start=joingroup_' + code;
+    var text = 'Присоединяйся к моей команде в Twinner 💪\n\nНажми ссылку и сразу вступай 👇\n' + link;
 
-    var copied = false;
+    // Telegram Share — открывает диалог пересылки прямо в Telegram
+    var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(link)
+                 + '&text=' + encodeURIComponent('Присоединяйся к моей команде в Twinner 💪 Нажми ссылку и сразу вступай!');
+    openTgLink(shareUrl);
+}
 
-    // Способ 1: Clipboard API (современные браузеры)
+/* ── Скопировать ссылку-приглашение ── */
+function copyInviteLink(code) {
+    var botName = getBotUsername();
+    var link = 'https://t.me/' + botName + '?start=joingroup_' + code;
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() {
-            showToast('📋 Приглашение скопировано! Отправь другу в Telegram');
-        }).catch(function() {
-            fallbackCopy(text);
-        });
+        navigator.clipboard.writeText(link).then(function() {
+            showToast('🔗 Ссылка скопирована!');
+        }).catch(function() { fallbackCopy(link); });
         return;
     }
-
-    // Способ 2: execCommand (старые браузеры / некоторые WebView)
-    fallbackCopy(text);
+    fallbackCopy(link);
 }
 
 function fallbackCopy(text) {
@@ -3652,10 +3654,9 @@ function fallbackCopy(text) {
     ta.select();
     try {
         document.execCommand('copy');
-        showToast('📋 Приглашение скопировано! Отправь другу в Telegram');
+        showToast('🔗 Ссылка скопирована!');
     } catch(e) {
-        // Ничего не сработало — показываем код явно
-        showToast('Код команды: ' + text.match(/\/joingroup (\w+)/)?.[1] || '?');
+        showToast('Ссылка: ' + text);
     }
     document.body.removeChild(ta);
 }
@@ -3808,7 +3809,9 @@ function renderMyTeams() {
             + '</div>'
             + rows
             + '<div class="invite-hint">'
-            +   '<span onclick="inviteToTeam(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">📋 Скопировать приглашение</span>'
+            +   '<span onclick="inviteToTeam(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">📨 Поделиться</span>'
+            +   ' &nbsp;·&nbsp; '
+            +   '<span onclick="copyInviteLink(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">🔗 Скопировать ссылку</span>'
             +   ' &nbsp;·&nbsp; '
             +   (team.isCreator !== false
                     ? '<span id="delete-hint-' + idx + '"><span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span></span>'

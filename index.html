@@ -3685,6 +3685,11 @@ function addDemoMember(teamIdx) {
 
 /* ── Удалить команду — двойное подтверждение ── */
 function deleteTeam(idx) {
+    var team = myTeams[idx];
+    if (team && team.members && team.members.length > 1) {
+        showToast('❌ Нельзя удалить команду пока в ней есть участники');
+        return;
+    }
     var hint = document.getElementById('delete-hint-' + idx);
     if (!hint) return;
     // Первый клик — показываем подтверждение вместо кнопки
@@ -3815,8 +3820,6 @@ function renderMyTeams() {
             +   '<span onclick="inviteToTeam(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">📨 Поделиться</span>'
             +   ' &nbsp;·&nbsp; '
             +   '<span onclick="copyInviteLink(\'' + team.code + '\')" style="color:#a5b4fc;cursor:pointer;font-weight:700;">🔗 Скопировать ссылку</span>'
-            +   ' &nbsp;·&nbsp; '
-            +   '<span onclick="openTgLink(\'' + regLink + '\')" style="color:#34d399;cursor:pointer;font-weight:700;" title="Зарегистрировать в боте чтобы invite-ссылка работала">🤖 Регистрировать</span>'
             +   ' &nbsp;·&nbsp; '
             +   (team.isCreator !== false
                     ? '<span id="delete-hint-' + idx + '"><span onclick="deleteTeam(' + idx + ')" style="cursor:pointer;color:rgba(239,68,68,0.5);">удалить</span></span>'

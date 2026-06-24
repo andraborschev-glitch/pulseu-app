@@ -3600,13 +3600,70 @@ function toggleJoinCodeForm() {
 
 /* ── Вступить по коду (открывает бот) ── */
 function doJoinByCode() {
-    const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+    var code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
     if (code.length < 4) { showToast('Введи код (6 символов)'); return; }
-    const botUrl = 'https://t.me/' + getBotUsername() + '?start=joingroup_' + code;
-    openTgLink(botUrl);
+
     document.getElementById('joinCodeForm').classList.remove('visible');
     document.getElementById('joinCodeInput').value = '';
-    showToast('Открываем бота для входа в команду…');
+
+    // Сначала получаем данные команды с сервера
+    fetch(API_BASE + '/api/groups/' + code)
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+            if (!data) {
+                showToast('❌ Команда с кодом ' + code + ' не найдена');
+                return;
+            }
+            // Уже состоишь?
+            var alreadyIn = myTeams.some(function(t) { return t.code === code; });
+            if (!alreadyIn) {
+                // Добавляем команду локально
+                var myName = (typeof profile !== 'undefined' && profile && profile.name) ? profile.name : 'Ты';
+                var colors = ['#8b5cf6','#f97316','#10b981','#f59e0b','#ef4444','#06b6d4'];
+                var members = data.members.map(function(srv, i) {
+                    var isMe = false; // нельзя знать — бот ещё не вступил
+                    return {
+                        userId:   srv.userId,
+                        name:     i === 0 ? (data.name || 'Создатель') : 'Участник',
+                        streak:   srv.streak,
+                        checkins: srv.checkins,
+                        avatar:   i === 0 ? '👑' : '👤',
+                        color:    colors[i % colors.length],
+                        isMe:     false
+                    };
+                });
+                // Добавляем себя как нового участника
+                members.push({
+                    name:     myName,
+                    streak:   0,
+                    checkins: 0,
+                    avatar:   '⚡',
+                    color:    '#667eea',
+                    isMe:     true
+                });
+                myTeams.push({
+                    code:      code,
+                    name:      data.name,
+                    isCreator: false,
+                    created:   data.created || '',
+                    members:   members
+                });
+                saveTeams();
+                renderMyTeams();
+                showToast('✅ Команда «' + data.name + '» добавлена!');
+            } else {
+                showToast('ℹ️ Ты уже в этой команде');
+            }
+            // Открываем бота чтобы зафиксировать вступление
+            var botUrl = 'https://t.me/' + getBotUsername() + '?start=joingroup_' + code;
+            openTgLink(botUrl);
+        })
+        .catch(function() {
+            // Если API недоступен — просто открываем бота
+            var botUrl = 'https://t.me/' + getBotUsername() + '?start=joingroup_' + code;
+            openTgLink(botUrl);
+            showToast('Открываем бота для входа в команду…');
+        });
 }
 
 /* ── Скопировать код команды ── */
@@ -3996,43 +4053,62 @@ var API_BASE = 'https://a4a825a6-2e61-430d-9424-18d92f47e326-00-1qqslt78zptw1.pi
 function syncAllTeams() {
     if (!myTeams || !myTeams.length) return;
     myTeams.forEach(function(team, idx) {
-        fetch(API_BASE + '/api/groups/' + team.code)
-            .then(function(r) { return r.ok ? r.json() : null; })
-            .then(function(data) {
-                if (!data || !data.members) return;
-                var changed = false;
-                // Добавляем новых участников которых нет локально
-                data.members.forEach(function(srv) {
-                    var existing = myTeams[idx].members.find(function(m) {
-                        return m.userId === srv.userId || (m.isMe && srv.userId === String(srv.userId));
-                    });
-                    if (!existing) {
-                        myTeams[idx].members.push({
-                            userId:   srv.userId,
-                            name:     'Участник',
-                            streak:   srv.streak,
-                            checkins: srv.checkins,
-                            avatar:   '👤',
-                            color:    '#8b5cf6',
-                            isMe:     false
-                        });
-                        changed = true;
-                    } else {
-                        // Обновляем статистику
-                        if (existing.streak !== srv.streak || existing.checkins !== srv.checkins) {
-                            existing.streak   = srv.streak;
-                            existing.checkins = srv.checkins;
-                            changed = true;
-                        }
-                    }
-                });
-                if (changed) {
-                    saveTeams();
-                    renderMyTeams();
-                }
-            })
-            .catch(function() {});
+        syncTeamByCode(team.code, idx);
     });
+}
+
+function syncTeamByCode(code, localIdx) {
+    fetch(API_BASE + '/api/groups/' + code)
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+            if (!data || !data.members) return;
+
+            // Если localIdx не задан — ищем команду в myTeams по коду
+            var idx = (localIdx !== undefined) ? localIdx
+                : myTeams.findIndex(function(t) { return t.code === code; });
+            if (idx === -1) return;
+
+            var changed = false;
+
+            data.members.forEach(function(srv) {
+                // Точный матч по userId
+                var existing = myTeams[idx].members.find(function(m) {
+                    return m.userId === srv.userId;
+                });
+                // Если нет точного матча — проверяем: создатель = creatorId
+                if (!existing && srv.userId === data.creatorId) {
+                    existing = myTeams[idx].members.find(function(m) { return m.isMe; });
+                    if (existing && !existing.userId) {
+                        existing.userId = srv.userId;
+                    }
+                }
+                if (existing) {
+                    if (existing.streak !== srv.streak || existing.checkins !== srv.checkins) {
+                        existing.streak   = srv.streak;
+                        existing.checkins = srv.checkins;
+                        changed = true;
+                    }
+                } else {
+                    var colors = ['#8b5cf6','#f97316','#10b981','#f59e0b','#ef4444','#06b6d4'];
+                    myTeams[idx].members.push({
+                        userId:   srv.userId,
+                        name:     'Участник',
+                        streak:   srv.streak,
+                        checkins: srv.checkins,
+                        avatar:   '👤',
+                        color:    colors[myTeams[idx].members.length % colors.length],
+                        isMe:     false
+                    });
+                    changed = true;
+                }
+            });
+
+            if (changed) {
+                saveTeams();
+                renderMyTeams();
+            }
+        })
+        .catch(function() {});
 }
 
 // =============================================

@@ -814,6 +814,35 @@
             color: #fff;
         }
 
+        .wd-metric-card {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+        }
+        .wd-metric-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .wd-metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .wd-metric-sub {
+            font-size: 11px;
+            margin-top: 3px;
+            color: rgba(255,255,255,0.35);
+        }
+        .wd-metric-sub.up   { color: #f97316; }
+        .wd-metric-sub.down { color: #34d399; }
+
         .week-card .wk-label {
             font-size: 10px;
             color: rgba(255,255,255,0.35);
@@ -2206,6 +2235,7 @@
         <span>Общий прогресс</span>
         <strong id="wdTotalPct">0%</strong>
     </div>
+    <div id="wdMetrics" style="display:flex;gap:8px;padding:0 20px 4px;flex-wrap:wrap;"></div>
     <div id="wdBody"></div>
 </div>
 
@@ -2927,6 +2957,65 @@ function showWeekDetail(weekIdx, startDay, endDay, color) {
     });
 
     document.getElementById('wdBody').innerHTML = bodyHtml;
+
+    // ── Вес за неделю ──────────────────────────────
+    const yr  = viewDate.getFullYear();
+    const mo  = String(viewDate.getMonth() + 1).padStart(2, '0');
+
+    let weightStart = null, weightEnd = null, weekSteps = 0;
+    for (let d = startDay; d <= endDay; d++) {
+        const key = `${yr}-${mo}-${String(d).padStart(2, '0')}`;
+        const w = weightLog[key];
+        if (w != null) {
+            if (weightStart === null) weightStart = w;
+            weightEnd = w;
+        }
+        weekSteps += stepsLog[key] || 0;
+    }
+
+    let metricsHtml = '';
+
+    // Карточка веса
+    if (weightStart !== null) {
+        const diff = weightEnd - weightStart;
+        const sign = diff > 0 ? '+' : '';
+        const diffClass = diff > 0 ? 'up' : (diff < 0 ? 'down' : '');
+        const diffText = diff === 0
+            ? 'без изменений'
+            : `${sign}${diff.toFixed(1)} кг за неделю`;
+        metricsHtml += `
+        <div class="wd-metric-card">
+            <div class="wd-metric-label">⚖️ Вес</div>
+            <div class="wd-metric-value">${weightEnd.toFixed(1)} кг</div>
+            <div class="wd-metric-sub ${diffClass}">
+                нач. ${weightStart.toFixed(1)} → кон. ${weightEnd.toFixed(1)}<br>${diffText}
+            </div>
+        </div>`;
+    } else {
+        metricsHtml += `
+        <div class="wd-metric-card">
+            <div class="wd-metric-label">⚖️ Вес</div>
+            <div class="wd-metric-value" style="color:rgba(255,255,255,0.2);font-size:14px;">нет данных</div>
+        </div>`;
+    }
+
+    // Карточка шагов
+    const stepsFormatted = weekSteps >= 1000
+        ? (weekSteps / 1000).toFixed(1) + 'k'
+        : weekSteps.toString();
+    const stepsPerDay = endDay > startDay
+        ? Math.round(weekSteps / (endDay - startDay + 1))
+        : weekSteps;
+    metricsHtml += `
+    <div class="wd-metric-card">
+        <div class="wd-metric-label">👟 Шаги за неделю</div>
+        <div class="wd-metric-value">${weekSteps > 0 ? stepsFormatted : '—'}</div>
+        ${weekSteps > 0
+            ? `<div class="wd-metric-sub">~${stepsPerDay.toLocaleString()} шагов/день</div>`
+            : `<div class="wd-metric-sub">нет данных</div>`}
+    </div>`;
+
+    document.getElementById('wdMetrics').innerHTML = metricsHtml;
 
     // Открываем
     document.getElementById('weekDetailOverlay').classList.add('open');

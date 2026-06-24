@@ -4302,6 +4302,84 @@ loadTeams();
 loadJoined();
 renderMyTeams();
 
+// Очистка дубликатов в локальных командах
+function deduplicateTeams(myUserId) {
+    var changed = false;
+    myTeams.forEach(function(team) {
+        // 1. Удаляем дубликаты по userId (оставляем первый)
+        var seenIds = {};
+        team.members = team.members.filter(function(m) {
+            if (!m.userId) return true; // без userId — пока оставляем
+            if (seenIds[m.userId]) { changed = true; return false; }
+            seenIds[m.userId] = true;
+            return true;
+        });
+        // 2. Если есть участник с userId === myUserId — удаляем orphan isMe без userId
+        var hasMeWithId = team.members.some(function(m) { return m.userId === myUserId; });
+        if (hasMeWithId) {
+            var before = team.members.length;
+            team.members = team.members.filter(function(m) {
+                return !(m.isMe && !m.userId);
+            });
+            if (team.members.length !== before) changed = true;
+        }
+        // 3. Помечаем правильного участника как isMe
+        team.members.forEach(function(m) {
+            if (m.userId === myUserId && !m.isMe) { m.isMe = true; changed = true; }
+            if (m.userId && m.userId !== myUserId && m.isMe) { m.isMe = false; changed = true; }
+        });
+    });
+    if (changed) { saveTeams(); renderMyTeams(); }
+}
+
+// Авто-синк: подгружаем все группы пользователя из бота при каждом открытии webapp
+function autoSyncUserGroups() {
+    var tg = window.Telegram && window.Telegram.WebApp;
+    var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && String(tg.initDataUnsafe.user.id);
+    if (!userId) return; // открыто не в Telegram — пропускаем
+
+    deduplicateTeams(userId); // сначала чистим старые данные
+    fetch(API_BASE + '/api/user-groups/' + userId)
+        .then(function(r) { return r.ok ? r.json() : []; })
+        .then(function(serverGroups) {
+            if (!Array.isArray(serverGroups) || !serverGroups.length) return;
+            var colors = ['#8b5cf6','#f97316','#10b981','#f59e0b','#ef4444','#06b6d4'];
+            var changed = false;
+            serverGroups.forEach(function(sg) {
+                var alreadyIn = myTeams.some(function(t) { return t.code === sg.code; });
+                if (!alreadyIn) {
+                    // Новая команда — добавляем
+                    var isCreator = sg.creatorId === userId;
+                    var members = (sg.members || []).map(function(srv, i) {
+                        var isMe = srv.userId === userId;
+                        return {
+                            userId:   srv.userId,
+                            name:     isMe ? (typeof profile !== 'undefined' && profile && profile.name ? profile.name : 'Ты') : (i === 0 && sg.creatorId === srv.userId ? 'Создатель' : 'Участник'),
+                            streak:   srv.streak,
+                            checkins: srv.checkins,
+                            avatar:   isMe ? '⚡' : (i === 0 && sg.creatorId === srv.userId ? '👑' : '👤'),
+                            color:    isMe ? '#667eea' : colors[i % colors.length],
+                            isMe:     isMe
+                        };
+                    });
+                    myTeams.push({ code: sg.code, name: sg.name, isCreator: isCreator, created: sg.created || '', members: members });
+                    changed = true;
+                } else {
+                    // Обновляем участников существующей команды
+                    var idx = myTeams.findIndex(function(t) { return t.code === sg.code; });
+                    if (idx !== -1) syncTeamByCode(sg.code, idx);
+                }
+            });
+            if (changed) {
+                saveTeams();
+                renderMyTeams();
+            }
+        })
+        .catch(function() {});
+}
+
+setTimeout(autoSyncUserGroups, 500);
+
 // Авто-вступление по URL-хэшу: #joingroup_CODE
 (function() {
     var hash = window.location.hash; // напр. "#joingroup_ABC123"

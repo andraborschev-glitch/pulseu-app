@@ -566,6 +566,16 @@
             background: #0e0e1e;
         }
 
+        /* Чередование недель */
+        .grid-table th.week-odd,
+        .grid-table td.week-odd {
+            background: rgba(255,255,255,0.035);
+        }
+        .grid-table th.week-even,
+        .grid-table td.week-even {
+            background: rgba(255,255,255,0.008);
+        }
+
         .habit-name-cell {
             padding: 8px 10px 8px 14px;
             display: flex;
@@ -2543,6 +2553,10 @@ function renderGrid() {
     const isCurrentMonth = today.getFullYear() === viewDate.getFullYear() &&
                            today.getMonth() === viewDate.getMonth();
 
+    // Вычисляем день недели первого числа месяца (для разбивки по неделям)
+    const firstDow = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1).getDay();
+    const weekClass = d => `week-${Math.floor((d - 1 + firstDow) / 7) % 2 === 0 ? 'even' : 'odd'}`;
+
     // Заголовок
     const head = document.getElementById('gridHead');
     let headHtml = '<tr><th class="habit-col">Привычка</th>';
@@ -2550,7 +2564,7 @@ function renderGrid() {
         const date = new Date(viewDate.getFullYear(), viewDate.getMonth(), d);
         const dayName = DAYS_SHORT[date.getDay()];
         const isToday = isCurrentMonth && d === today.getDate();
-        headHtml += `<th style="${isToday ? 'color:#a5b4fc;' : ''}">${d}<br><span style="font-weight:400;opacity:0.6">${dayName}</span></th>`;
+        headHtml += `<th class="${weekClass(d)}" style="${isToday ? 'color:#a5b4fc;' : ''}">${d}<br><span style="font-weight:400;opacity:0.6">${dayName}</span></th>`;
     }
     headHtml += '<th class="progress-col">Итог</th></tr>';
     head.innerHTML = headHtml;
@@ -2580,7 +2594,7 @@ function renderGrid() {
             const dotStyle = isDone ? `background:${habit.color};box-shadow:0 0 8px ${habit.color}55;` : '';
             const check = isDone ? '✓' : '';
             const isClickable = isCurrentMonth && d === today.getDate();
-            const cellClass = 'day-cell' + (isClickable ? '' : ' locked');
+            const cellClass = `day-cell ${weekClass(d)}` + (isClickable ? '' : ' locked');
             const clickAttr = isClickable ? `onclick="toggleHabit('${habit.id}',${d})"` : '';
 
             bodyHtml += `<td class="${cellClass}" ${clickAttr}>
@@ -2624,14 +2638,14 @@ function renderSummary() {
     const offset = circumference - (pct / 100) * circumference;
     document.getElementById('ringProgress').style.strokeDashoffset = offset;
 
-    // Серия дней подряд (все привычки выполнены)
+    // Серия дней подряд (хотя бы одна привычка выполнена за день)
     let streak = 0;
     const checkDate = new Date();
     while (true) {
         const cmk = getMonthKey(checkDate);
         const cd = checkDate.getDate();
-        const allDone = getActiveHabits().every(h => data[cmk]?.[h.id]?.[cd] === true);
-        if (!allDone) break;
+        const anyDone = getActiveHabits().some(h => data[cmk]?.[h.id]?.[cd] === true);
+        if (!anyDone) break;
         streak++;
         checkDate.setDate(checkDate.getDate() - 1);
         if (streak > 365) break;

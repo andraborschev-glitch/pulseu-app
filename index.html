@@ -2686,11 +2686,33 @@ function save() {
     localStorage.setItem('twinner_v2', JSON.stringify({ data, weightLog, stepsLog }));
 }
 
+// Grace period: до 3:00 ночи можно отмечать вчерашний день
+function getClickableDay() {
+    const now = new Date();
+    if (now.getHours() < 3) {
+        const yesterday = new Date(now);
+        yesterday.setDate(yesterday.getDate() - 1);
+        return { date: yesterday, isGrace: true };
+    }
+    return { date: now, isGrace: false };
+}
+
+function isClickableDay(d, viewDate) {
+    const today = new Date();
+    const isCurrentMonth = viewDate.getFullYear() === today.getFullYear()
+                        && viewDate.getMonth()    === today.getMonth();
+    if (!isCurrentMonth) return false;
+    const { date: clickable } = getClickableDay();
+    const clickableMonth = clickable.getFullYear() === viewDate.getFullYear()
+                        && clickable.getMonth()    === viewDate.getMonth();
+    return (clickableMonth && d === clickable.getDate()) || d === today.getDate();
+}
+
 function toggleHabit(habitId, day) {
     const today = new Date();
     const isCurrentMonth = viewDate.getFullYear() === today.getFullYear()
                         && viewDate.getMonth()    === today.getMonth();
-    if (!isCurrentMonth || day !== today.getDate()) {
+    if (!isCurrentMonth || !isClickableDay(day, viewDate)) {
         showToast('Можно отмечать только сегодня');
         return;
     }
@@ -2701,7 +2723,10 @@ function toggleHabit(habitId, day) {
     save();
     render();
     const done = data[mk][habitId][day];
-    showToast(done ? '✅ Выполнено!' : '↩️ Отменено');
+    const { isGrace } = getClickableDay();
+    showToast(done
+        ? (isGrace && day !== today.getDate() ? '✅ Вчера засчитано!' : '✅ Выполнено!')
+        : '↩️ Отменено');
 }
 
 // ===== РЕНДЕР =====
@@ -2766,7 +2791,13 @@ function renderGrid() {
 
             const dotStyle = isDone ? `background:${habit.color};box-shadow:0 0 8px ${habit.color}55;` : '';
             const check = isDone ? '✓' : '';
-            const isClickable = isCurrentMonth && d === today.getDate();
+            const { date: clickableDate, isGrace } = getClickableDay();
+            const isClickable = isCurrentMonth && (
+                d === today.getDate() ||
+                (isGrace && clickableDate.getFullYear() === viewDate.getFullYear()
+                         && clickableDate.getMonth()    === viewDate.getMonth()
+                         && d === clickableDate.getDate())
+            );
             const cellClass = `day-cell ${weekClass(d)}` + (isClickable ? '' : ' locked');
             const clickAttr = isClickable ? `onclick="toggleHabit('${habit.id}',${d})"` : '';
 

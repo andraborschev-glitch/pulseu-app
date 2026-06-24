@@ -4288,6 +4288,49 @@ loadTeams();
 loadJoined();
 renderMyTeams();
 
+// Авто-вступление по URL-хэшу: #joingroup_CODE
+(function() {
+    var hash = window.location.hash; // напр. "#joingroup_ABC123"
+    if (hash && hash.indexOf('joingroup_') !== -1) {
+        var code = hash.split('joingroup_')[1].split('&')[0].toUpperCase();
+        if (code && code.length >= 4) {
+            // Переключаемся на вкладку Команда и запускаем вступление
+            setTimeout(function() {
+                switchTab('community');
+                var alreadyIn = myTeams.some(function(t) { return t.code === code; });
+                if (!alreadyIn) {
+                    fetch(API_BASE + '/api/groups/' + code)
+                        .then(function(r) { return r.ok ? r.json() : null; })
+                        .then(function(data) {
+                            if (!data) { showToast('Команда не найдена'); return; }
+                            var myName = (typeof profile !== 'undefined' && profile && profile.name) ? profile.name : 'Ты';
+                            var colors = ['#8b5cf6','#f97316','#10b981','#f59e0b','#ef4444','#06b6d4'];
+                            var members = data.members.map(function(srv, i) {
+                                return {
+                                    userId: srv.userId,
+                                    name: i === 0 ? '👑 Создатель' : 'Участник',
+                                    streak: srv.streak,
+                                    checkins: srv.checkins,
+                                    avatar: i === 0 ? '👑' : '👤',
+                                    color: colors[i % colors.length],
+                                    isMe: false
+                                };
+                            });
+                            members.push({ name: myName, streak: 0, checkins: 0, avatar: '⚡', color: '#667eea', isMe: true });
+                            myTeams.push({ code: code, name: data.name, isCreator: false, created: data.created || '', members: members });
+                            saveTeams();
+                            renderMyTeams();
+                            showToast('✅ Команда «' + data.name + '» добавлена!');
+                        })
+                        .catch(function() { showToast('Ошибка загрузки команды'); });
+                }
+            }, 400);
+            // Очищаем хэш из URL
+            history.replaceState(null, '', window.location.pathname);
+        }
+    }
+})();
+
 // =============================================
 //  АВАТАР-ГЕНЕРАТОР
 // =============================================

@@ -4386,9 +4386,16 @@ setTimeout(autoSyncUserGroups, 500);
     if (hash && hash.indexOf('joingroup_') !== -1) {
         var code = hash.split('joingroup_')[1].split('&')[0].toUpperCase();
         if (code && code.length >= 4) {
+            // Очищаем хэш из URL сразу
+            history.replaceState(null, '', window.location.pathname);
             // Переключаемся на вкладку Команда и запускаем вступление
             setTimeout(function() {
                 switchTab('community');
+                // Telegram userId (доступен когда открыто как WebApp)
+                var tg = window.Telegram && window.Telegram.WebApp;
+                var myUserId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user
+                    ? String(tg.initDataUnsafe.user.id) : null;
+
                 var alreadyIn = myTeams.some(function(t) { return t.code === code; });
                 if (!alreadyIn) {
                     fetch(API_BASE + '/api/groups/' + code)
@@ -4398,26 +4405,32 @@ setTimeout(autoSyncUserGroups, 500);
                             var myName = (typeof profile !== 'undefined' && profile && profile.name) ? profile.name : 'Ты';
                             var colors = ['#8b5cf6','#f97316','#10b981','#f59e0b','#ef4444','#06b6d4'];
                             var members = data.members.map(function(srv, i) {
+                                var isMe = myUserId ? (srv.userId === myUserId) : false;
                                 return {
                                     userId: srv.userId,
-                                    name: i === 0 ? 'Создатель' : 'Участник',
+                                    name: isMe ? myName : (i === 0 && srv.userId === data.creatorId ? 'Создатель' : 'Участник'),
                                     streak: srv.streak,
                                     checkins: srv.checkins,
-                                    avatar: i === 0 ? '👑' : '👤',
-                                    color: colors[i % colors.length],
-                                    isMe: false
+                                    avatar: isMe ? '⚡' : (i === 0 && srv.userId === data.creatorId ? '👑' : '👤'),
+                                    color: isMe ? '#667eea' : colors[i % colors.length],
+                                    isMe: isMe
                                 };
                             });
-                            myTeams.push({ code: code, name: data.name, isCreator: false, created: data.created || '', members: members });
+                            myTeams.push({ code: code, name: data.name, isCreator: myUserId === data.creatorId, created: data.created || '', members: members });
                             saveTeams();
                             renderMyTeams();
                             showToast('✅ Команда «' + data.name + '» добавлена!');
                         })
                         .catch(function() { showToast('Ошибка загрузки команды'); });
+                } else if (myUserId) {
+                    // Команда уже есть — просто обновляем isMe если знаем userId
+                    var idx = myTeams.findIndex(function(t) { return t.code === code; });
+                    if (idx !== -1) {
+                        deduplicateTeams(myUserId);
+                        syncTeamByCode(code, idx);
+                    }
                 }
-            }, 400);
-            // Очищаем хэш из URL
-            history.replaceState(null, '', window.location.pathname);
+            }, 600);
         }
     }
 })();

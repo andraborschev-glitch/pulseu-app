@@ -3622,10 +3622,11 @@ function copyTeamCode(code) {
 function inviteToTeam(code) {
     var botName = getBotUsername();
     var link = 'https://t.me/' + botName + '?start=joingroup_' + code;
-    var msgText = 'Привет! Присоединяйся к моей команде в Twinner 💪 Нажми ссылку и сразу вступай.\n\nБудем вместе следить за прогрессом!';
+    var msgText = 'Привет! Присоединяйся к моей команде в Twinner 💪 Нажми ссылку и сразу вступай.\n\n'
+                + link + '\n\n'
+                + 'Будем вместе следить за прогрессом!';
 
-    var shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(link)
-                 + '&text=' + encodeURIComponent(msgText);
+    var shareUrl = 'https://t.me/share/url?text=' + encodeURIComponent(msgText);
     openTgLink(shareUrl);
 }
 

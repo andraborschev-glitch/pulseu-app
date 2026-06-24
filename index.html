@@ -3624,22 +3624,13 @@ function doJoinByCode() {
                     var isMe = false; // нельзя знать — бот ещё не вступил
                     return {
                         userId:   srv.userId,
-                        name:     i === 0 ? (data.name || 'Создатель') : 'Участник',
+                        name:     i === 0 ? 'Создатель' : 'Участник',
                         streak:   srv.streak,
                         checkins: srv.checkins,
                         avatar:   i === 0 ? '👑' : '👤',
                         color:    colors[i % colors.length],
                         isMe:     false
                     };
-                });
-                // Добавляем себя как нового участника
-                members.push({
-                    name:     myName,
-                    streak:   0,
-                    checkins: 0,
-                    avatar:   '⚡',
-                    color:    '#667eea',
-                    isMe:     true
                 });
                 myTeams.push({
                     code:      code,
@@ -3675,30 +3666,53 @@ function copyTeamCode(code) {
     showToast('Код ' + code + ' скопирован!');
 }
 
+/* ── Убедиться что команда зарегистрирована в боте, потом выполнить callback ── */
+function ensureTeamRegistered(code, teamName, onReady) {
+    fetch(API_BASE + '/api/groups/' + code)
+        .then(function(r) {
+            if (r.ok) {
+                onReady();
+            } else {
+                // Команда не зарегистрирована — открываем бота для регистрации
+                showToast('⚠️ Сначала зарегистрируй команду в боте — нажми START');
+                var safeName = (teamName || 'Team').replace(/[^A-Za-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 25) || 'Team';
+                var regLink = 'https://t.me/' + getBotUsername() + '?start=regteam_' + code + '_' + safeName;
+                openTgLink(regLink);
+            }
+        })
+        .catch(function() { onReady(); }); // если API недоступен — разрешаем шарить
+}
+
 /* ── Поделиться приглашением через Telegram ── */
 function inviteToTeam(code) {
-    var botName = getBotUsername();
-    var link = 'https://t.me/' + botName + '?start=joingroup_' + code;
-    var msgText = 'Привет! Присоединяйся к моей команде в Twinner 💪 Нажми ссылку и сразу вступай.\n\n'
-                + link + '\n\n'
-                + 'Будем вместе следить за прогрессом!';
-
-    var shareUrl = 'https://t.me/share/url?text=' + encodeURIComponent(msgText);
-    openTgLink(shareUrl);
+    var team = myTeams.find(function(t) { return t.code === code; });
+    var teamName = team ? team.name : '';
+    ensureTeamRegistered(code, teamName, function() {
+        var botName = getBotUsername();
+        var link = 'https://t.me/' + botName + '?start=joingroup_' + code;
+        var msgText = 'Привет! Присоединяйся к моей команде в Twinner 💪 Нажми ссылку и сразу вступай.\n\n'
+                    + link + '\n\n'
+                    + 'Будем вместе следить за прогрессом!';
+        var shareUrl = 'https://t.me/share/url?text=' + encodeURIComponent(msgText);
+        openTgLink(shareUrl);
+    });
 }
 
 /* ── Скопировать ссылку-приглашение ── */
 function copyInviteLink(code) {
-    var botName = getBotUsername();
-    var link = 'https://t.me/' + botName + '?start=joingroup_' + code;
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link).then(function() {
-            showToast('🔗 Ссылка скопирована!');
-        }).catch(function() { fallbackCopy(link); });
-        return;
-    }
-    fallbackCopy(link);
+    var team = myTeams.find(function(t) { return t.code === code; });
+    var teamName = team ? team.name : '';
+    ensureTeamRegistered(code, teamName, function() {
+        var botName = getBotUsername();
+        var link = 'https://t.me/' + botName + '?start=joingroup_' + code;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(link).then(function() {
+                showToast('🔗 Ссылка скопирована!');
+            }).catch(function() { fallbackCopy(link); });
+            return;
+        }
+        fallbackCopy(link);
+    });
 }
 
 function fallbackCopy(text) {
@@ -4308,7 +4322,7 @@ renderMyTeams();
                             var members = data.members.map(function(srv, i) {
                                 return {
                                     userId: srv.userId,
-                                    name: i === 0 ? '👑 Создатель' : 'Участник',
+                                    name: i === 0 ? 'Создатель' : 'Участник',
                                     streak: srv.streak,
                                     checkins: srv.checkins,
                                     avatar: i === 0 ? '👑' : '👤',
@@ -4316,7 +4330,6 @@ renderMyTeams();
                                     isMe: false
                                 };
                             });
-                            members.push({ name: myName, streak: 0, checkins: 0, avatar: '⚡', color: '#667eea', isMe: true });
                             myTeams.push({ code: code, name: data.name, isCreator: false, created: data.created || '', members: members });
                             saveTeams();
                             renderMyTeams();

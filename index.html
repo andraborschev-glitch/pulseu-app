@@ -2774,7 +2774,7 @@ function renderGrid() {
         const date = new Date(viewDate.getFullYear(), viewDate.getMonth(), d);
         const dayName = DAYS_SHORT[date.getDay()];
         const isToday = isCurrentMonth && d === today.getDate();
-        headHtml += `<th class="${weekClass(d)}" style="${isToday ? 'color:#a5b4fc;' : ''}">${d}<br><span style="font-weight:400;opacity:0.6">${dayName}</span></th>`;
+        headHtml += `<th class="${weekClass(d)}" ${isToday ? 'id="today-col"' : ''} style="${isToday ? 'color:#a5b4fc;' : ''}">${d}<br><span style="font-weight:400;opacity:0.6">${dayName}</span></th>`;
     }
     headHtml += '<th class="progress-col">Итог</th></tr>';
     head.innerHTML = headHtml;
@@ -2827,6 +2827,20 @@ function renderGrid() {
     });
 
     body.innerHTML = bodyHtml;
+    scrollToToday();
+}
+
+function scrollToToday() {
+    const col = document.getElementById('today-col');
+    if (!col) return;
+    const container = col.closest('.grid-container');
+    if (!container) return;
+    // Скроллим контейнер так чтобы сегодняшняя колонка была в правой части экрана
+    const colLeft = col.offsetLeft;
+    const colWidth = col.offsetWidth;
+    const containerWidth = container.clientWidth;
+    const scrollTarget = colLeft - containerWidth + colWidth + 40;
+    container.scrollLeft = Math.max(0, scrollTarget);
 }
 
 function renderSummary() {
@@ -3783,6 +3797,13 @@ function addDemoMember(teamIdx) {
 
 /* ── Удалить команду — двойное подтверждение ── */
 function deleteTeam(idx) {
+    var team = myTeams[idx];
+    // Считаем участников кроме себя
+    var others = team && team.members ? team.members.filter(function(m) { return !m.isMe; }).length : 0;
+    if (others > 0) {
+        showToast('❌ Сначала удали всех участников из команды');
+        return;
+    }
     var hint = document.getElementById('delete-hint-' + idx);
     if (!hint) return;
     hint.innerHTML = '<span style="color:rgba(255,255,255,0.5);font-size:12px;">Удалить?&nbsp;</span>'

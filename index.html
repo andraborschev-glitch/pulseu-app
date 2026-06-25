@@ -4200,6 +4200,17 @@ function syncTeamByCode(code, localIdx) {
             var tg = window.Telegram && window.Telegram.WebApp;
             var myUid = tg && tg.initDataUnsafe && tg.initDataUnsafe.user
                 ? String(tg.initDataUnsafe.user.id) : null;
+
+            // Если меня больше нет в списке участников — меня кикнули
+            if (myUid) {
+                var iAmMember = data.members.some(function(m) { return m.userId === myUid; });
+                if (!iAmMember) {
+                    myTeams.splice(idx, 1);
+                    saveTeams();
+                    renderMyTeams();
+                    return;
+                }
+            }
             if (myUid && data.creatorId) {
                 var shouldBeCreator = (data.creatorId === myUid);
                 if (myTeams[idx].isCreator !== shouldBeCreator) {

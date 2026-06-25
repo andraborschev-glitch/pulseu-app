@@ -3460,6 +3460,27 @@ renderProfile();
 render();
 
 // =============================================
+//  TELEGRAM USER ID — надёжное хранение
+// =============================================
+
+function getMyUserId() {
+    // 1. Из Telegram WebApp (самый точный источник)
+    try {
+        var tg = window.Telegram && window.Telegram.WebApp;
+        var uid = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && String(tg.initDataUnsafe.user.id);
+        if (uid) {
+            localStorage.setItem('twinner_uid', uid); // сохраняем на будущее
+            return uid;
+        }
+    } catch(e) {}
+    // 2. Из localStorage (если уже открывали через Telegram раньше)
+    return localStorage.getItem('twinner_uid') || null;
+}
+
+// Сохраняем userId сразу при загрузке если доступен
+getMyUserId();
+
+// =============================================
 //  СООБЩЕСТВО
 // =============================================
 
@@ -4197,14 +4218,15 @@ function syncTeamByCode(code, localIdx) {
             var changed = false;
 
             // Обновляем isCreator по данным сервера
-            var tg = window.Telegram && window.Telegram.WebApp;
-            var myUid = tg && tg.initDataUnsafe && tg.initDataUnsafe.user
-                ? String(tg.initDataUnsafe.user.id) : null;
+            var myUid = getMyUserId();
 
             // Если меня больше нет в списке участников — меня кикнули
-            // Используем myUid из Telegram, или userId из локального isMe-участника как запасной вариант
-            var meMember = myTeams[idx] && myTeams[idx].members.find(function(m) { return m.isMe && m.userId; });
-            var effectiveUid = myUid || (meMember && meMember.userId);
+            var effectiveUid = myUid;
+            if (!effectiveUid) {
+                // Фолбэк: ищем isMe-участника с userId в локальных данных
+                var meMember = myTeams[idx] && myTeams[idx].members.find(function(m) { return m.isMe && m.userId; });
+                effectiveUid = meMember && meMember.userId;
+            }
             if (effectiveUid) {
                 var iAmMember = data.members.some(function(m) { return m.userId === effectiveUid; });
                 if (!iAmMember) {
@@ -4472,9 +4494,8 @@ function deduplicateTeams(myUserId) {
 
 // Авто-синк: подгружаем все группы пользователя из бота при каждом открытии webapp
 function autoSyncUserGroups() {
-    var tg = window.Telegram && window.Telegram.WebApp;
-    var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && String(tg.initDataUnsafe.user.id);
-    if (!userId) return; // открыто не в Telegram — пропускаем
+    var userId = getMyUserId();
+    if (!userId) return; // userId неизвестен — пропускаем
 
     deduplicateTeams(userId); // сначала чистим старые данные
     fetch(API_BASE + '/api/user-groups/' + userId)
@@ -4548,9 +4569,7 @@ setInterval(autoSyncUserGroups, 30000);
             setTimeout(function() {
                 switchTab('community');
                 // Telegram userId (доступен когда открыто как WebApp)
-                var tg = window.Telegram && window.Telegram.WebApp;
-                var myUserId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user
-                    ? String(tg.initDataUnsafe.user.id) : null;
+                var myUserId = getMyUserId();
 
                 var alreadyIn = myTeams.some(function(t) { return t.code === code; });
                 if (!alreadyIn) {

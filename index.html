@@ -4202,8 +4202,11 @@ function syncTeamByCode(code, localIdx) {
                 ? String(tg.initDataUnsafe.user.id) : null;
 
             // Если меня больше нет в списке участников — меня кикнули
-            if (myUid) {
-                var iAmMember = data.members.some(function(m) { return m.userId === myUid; });
+            // Используем myUid из Telegram, или userId из локального isMe-участника как запасной вариант
+            var meMember = myTeams[idx] && myTeams[idx].members.find(function(m) { return m.isMe && m.userId; });
+            var effectiveUid = myUid || (meMember && meMember.userId);
+            if (effectiveUid) {
+                var iAmMember = data.members.some(function(m) { return m.userId === effectiveUid; });
                 if (!iAmMember) {
                     myTeams.splice(idx, 1);
                     saveTeams();
@@ -4531,6 +4534,7 @@ function autoSyncUserGroups() {
 }
 
 setTimeout(autoSyncUserGroups, 500);
+setInterval(autoSyncUserGroups, 30000);
 
 // Авто-вступление по URL-хэшу: #joingroup_CODE
 (function() {

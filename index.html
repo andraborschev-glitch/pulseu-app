@@ -3665,7 +3665,7 @@ function doJoinByCode() {
                     var isMe = false; // нельзя знать — бот ещё не вступил
                     return {
                         userId:   srv.userId,
-                        name:     i === 0 ? 'Создатель' : 'Участник',
+                        name:     i === 0 ? (srv.name || 'Создатель') : (srv.name || 'Участник'),
                         streak:   srv.streak,
                         checkins: srv.checkins,
                         avatar:   i === 0 ? '👑' : '👤',
@@ -4212,7 +4212,7 @@ function syncTeamByCode(code, localIdx) {
                     var colors = ['#8b5cf6','#f97316','#10b981','#f59e0b','#ef4444','#06b6d4'];
                     myTeams[idx].members.push({
                         userId:   srv.userId,
-                        name:     'Участник',
+                        name:     srv.name || 'Участник',
                         streak:   srv.streak,
                         checkins: srv.checkins,
                         avatar:   '👤',
@@ -4460,7 +4460,7 @@ function autoSyncUserGroups() {
                         var isMe = srv.userId === userId;
                         return {
                             userId:   srv.userId,
-                            name:     isMe ? (typeof profile !== 'undefined' && profile && profile.name ? profile.name : 'Ты') : (i === 0 && sg.creatorId === srv.userId ? 'Создатель' : 'Участник'),
+                            name:     isMe ? (typeof profile !== 'undefined' && profile && profile.name ? profile.name : 'Ты') : (srv.name || (i === 0 && sg.creatorId === srv.userId ? 'Создатель' : 'Участник')),
                             streak:   srv.streak,
                             checkins: srv.checkins,
                             avatar:   isMe ? '⚡' : (i === 0 && sg.creatorId === srv.userId ? '👑' : '👤'),
@@ -4522,7 +4522,7 @@ setTimeout(autoSyncUserGroups, 500);
                                 var isMe = myUserId ? (srv.userId === myUserId) : false;
                                 return {
                                     userId: srv.userId,
-                                    name: isMe ? myName : (i === 0 && srv.userId === data.creatorId ? 'Создатель' : 'Участник'),
+                                    name: isMe ? myName : (srv.name || (i === 0 && srv.userId === data.creatorId ? 'Создатель' : 'Участник')),
                                     streak: srv.streak,
                                     checkins: srv.checkins,
                                     avatar: isMe ? '⚡' : (i === 0 && srv.userId === data.creatorId ? '👑' : '👤'),

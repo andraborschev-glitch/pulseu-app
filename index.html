@@ -3813,10 +3813,15 @@ function deleteTeam(idx) {
 }
 
 function confirmDeleteTeam(idx) {
+    var team = myTeams[idx];
+    var code = team && team.code;
     myTeams.splice(idx, 1);
     saveTeams();
     renderMyTeams();
     showToast('Команда удалена');
+    if (code) {
+        fetch(API_BASE + '/api/groups/' + code, { method: 'DELETE' }).catch(function() {});
+    }
 }
 
 function cancelDeleteTeam(idx) {
@@ -4167,7 +4172,20 @@ function syncAllTeams() {
 
 function syncTeamByCode(code, localIdx) {
     fetch(API_BASE + '/api/groups/' + code)
-        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(r) {
+            if (r.status === 404) {
+                // Команда удалена на сервере — убираем у участника
+                var idx = (localIdx !== undefined) ? localIdx
+                    : myTeams.findIndex(function(t) { return t.code === code; });
+                if (idx !== -1) {
+                    myTeams.splice(idx, 1);
+                    saveTeams();
+                    renderMyTeams();
+                }
+                return null;
+            }
+            return r.ok ? r.json() : null;
+        })
         .then(function(data) {
             if (!data || !data.members) return;
 

@@ -4475,11 +4475,21 @@ function autoSyncUserGroups() {
 
     deduplicateTeams(userId); // сначала чистим старые данные
     fetch(API_BASE + '/api/user-groups/' + userId)
-        .then(function(r) { return r.ok ? r.json() : []; })
+        .then(function(r) { return r.ok ? r.json() : null; })
         .then(function(serverGroups) {
-            if (!Array.isArray(serverGroups) || !serverGroups.length) return;
+            if (!Array.isArray(serverGroups)) return;
             var colors = ['#8b5cf6','#f97316','#10b981','#f59e0b','#ef4444','#06b6d4'];
             var changed = false;
+            var serverCodes = serverGroups.map(function(sg) { return sg.code; });
+
+            // Удаляем локальные команды которых больше нет на сервере (кик / удаление)
+            for (var i = myTeams.length - 1; i >= 0; i--) {
+                if (myTeams[i].code && serverCodes.indexOf(myTeams[i].code) === -1) {
+                    myTeams.splice(i, 1);
+                    changed = true;
+                }
+            }
+
             serverGroups.forEach(function(sg) {
                 var alreadyIn = myTeams.some(function(t) { return t.code === sg.code; });
                 if (!alreadyIn) {
@@ -4503,7 +4513,6 @@ function autoSyncUserGroups() {
                     // Обновляем участников существующей команды
                     var idx = myTeams.findIndex(function(t) { return t.code === sg.code; });
                     if (idx !== -1) {
-                        // Обновляем isCreator — он мог быть не задан в старых данных
                         var nowCreator = (sg.creatorId === userId);
                         if (myTeams[idx].isCreator !== nowCreator) {
                             myTeams[idx].isCreator = nowCreator;

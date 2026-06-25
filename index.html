@@ -2223,6 +2223,18 @@
         <div class="mp-bar-label"><span>Серия от максимума</span><span id="mpBarPctLbl">0%</span></div>
         <div class="mp-bar-track"><div class="mp-bar-fill" id="mpBarFill" style="width:0%"></div></div>
     </div>
+    <div id="mpKickWrap" style="display:none;padding:16px 20px 4px;">
+        <button id="mpKickBtn" onclick="kickMember()"
+            style="width:100%;padding:10px;border:1px solid rgba(239,68,68,0.4);border-radius:10px;background:rgba(239,68,68,0.08);color:#ef4444;font-size:14px;font-weight:600;cursor:pointer;">
+            🚫 Удалить из команды
+        </button>
+        <div id="mpKickConfirm" style="display:none;text-align:center;padding-top:10px;font-size:14px;color:rgba(255,255,255,0.6);">
+            Удалить участника?&nbsp;
+            <span onclick="confirmKickMember()" style="color:#ef4444;font-weight:700;cursor:pointer;">Да</span>
+            &nbsp;·&nbsp;
+            <span onclick="cancelKickMember()" style="color:rgba(255,255,255,0.4);cursor:pointer;">Нет</span>
+        </div>
+    </div>
 </div>
 
 <!-- ===== МОДАЛКА ДЕТАЛЕЙ НЕДЕЛИ ===== -->
@@ -3566,6 +3578,21 @@ function loadTeams() {
     try {
         myTeams = JSON.parse(localStorage.getItem(TEAMS_KEY) || '[]');
     } catch(e) { myTeams = []; }
+
+    // Чистим коды команд от мусора Telegram (?tgWebAppData=...)
+    var dirty = false;
+    var seen = {};
+    var cleaned = [];
+    myTeams.forEach(function(team) {
+        var cleanCode = (team.code || '').split(/[?&#]/)[0].toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+        if (!cleanCode || cleanCode.length < 4) return; // выбрасываем совсем битые
+        if (seen[cleanCode]) return;                     // дубли по коду — пропускаем
+        seen[cleanCode] = true;
+        if (team.code !== cleanCode) { team.code = cleanCode; dirty = true; }
+        cleaned.push(team);
+    });
+    myTeams = cleaned;
+    if (dirty) saveTeams();
 }
 
 function saveTeams() {
@@ -3756,14 +3783,8 @@ function addDemoMember(teamIdx) {
 
 /* ── Удалить команду — двойное подтверждение ── */
 function deleteTeam(idx) {
-    var team = myTeams[idx];
-    if (team && team.members && team.members.length > 1) {
-        showToast('❌ Нельзя удалить команду пока в ней есть участники');
-        return;
-    }
     var hint = document.getElementById('delete-hint-' + idx);
     if (!hint) return;
-    // Первый клик — показываем подтверждение вместо кнопки
     hint.innerHTML = '<span style="color:rgba(255,255,255,0.5);font-size:12px;">Удалить?&nbsp;</span>'
         + '<span onclick="confirmDeleteTeam(' + idx + ')" style="cursor:pointer;color:#ef4444;font-weight:700;">Да</span>'
         + '&nbsp;·&nbsp;'
@@ -3907,11 +3928,27 @@ function renderMyTeams() {
 //  ПАНЕЛЬ УЧАСТНИКА
 // =============================================
 
+var _mpTeamIdx = -1;
+var _mpMemberIdx = -1;
+
 function openMemberPanel(teamIdx, memberIdx) {
     var team = myTeams[teamIdx];
     if (!team) return;
     var m = team.members[memberIdx];
     if (!m) return;
+
+    _mpTeamIdx = teamIdx;
+    _mpMemberIdx = memberIdx;
+
+    // Кнопка «Удалить из команды» — только создателю, не для себя
+    var kickWrap = document.getElementById('mpKickWrap');
+    var kickConfirm = document.getElementById('mpKickConfirm');
+    var kickBtn = document.getElementById('mpKickBtn');
+    if (kickWrap) {
+        kickConfirm.style.display = 'none';
+        kickBtn.style.display = 'block';
+        kickWrap.style.display = (team.isCreator && !m.isMe) ? 'block' : 'none';
+    }
 
     // Шапка
     var av = document.getElementById('mpAvatar');
@@ -3969,6 +4006,42 @@ function openMemberPanel(teamIdx, memberIdx) {
 function closeMemberPanel() {
     document.getElementById('memberOverlay').classList.remove('open');
     document.getElementById('memberPanel').classList.remove('open');
+    _mpTeamIdx = -1;
+    _mpMemberIdx = -1;
+}
+
+/* ── Кик участника (только создатель) ── */
+function kickMember() {
+    document.getElementById('mpKickBtn').style.display = 'none';
+    document.getElementById('mpKickConfirm').style.display = 'block';
+}
+
+function cancelKickMember() {
+    document.getElementById('mpKickBtn').style.display = 'block';
+    document.getElementById('mpKickConfirm').style.display = 'none';
+}
+
+function confirmKickMember() {
+    var tIdx = _mpTeamIdx;
+    var mIdx = _mpMemberIdx;
+    if (tIdx < 0 || mIdx < 0) return;
+    var team = myTeams[tIdx];
+    if (!team) return;
+    var m = team.members[mIdx];
+    if (!m) return;
+
+    // Удаляем через API если есть userId
+    if (m.userId) {
+        fetch(API_BASE + '/api/groups/' + team.code + '/members/' + m.userId, { method: 'DELETE' })
+            .catch(function() {}); // тихо — локально всё равно удаляем
+    }
+
+    // Удаляем локально
+    team.members.splice(mIdx, 1);
+    saveTeams();
+    closeMemberPanel();
+    renderMyTeams();
+    showToast('✅ Участник удалён из команды');
 }
 
 /* ── Показать/скрыть форму создания команды ── */
@@ -4083,6 +4156,18 @@ function syncTeamByCode(code, localIdx) {
             if (idx === -1) return;
 
             var changed = false;
+
+            // Обновляем isCreator по данным сервера
+            var tg = window.Telegram && window.Telegram.WebApp;
+            var myUid = tg && tg.initDataUnsafe && tg.initDataUnsafe.user
+                ? String(tg.initDataUnsafe.user.id) : null;
+            if (myUid && data.creatorId) {
+                var shouldBeCreator = (data.creatorId === myUid);
+                if (myTeams[idx].isCreator !== shouldBeCreator) {
+                    myTeams[idx].isCreator = shouldBeCreator;
+                    changed = true;
+                }
+            }
 
             data.members.forEach(function(srv) {
                 // Точный матч по userId
@@ -4367,7 +4452,15 @@ function autoSyncUserGroups() {
                 } else {
                     // Обновляем участников существующей команды
                     var idx = myTeams.findIndex(function(t) { return t.code === sg.code; });
-                    if (idx !== -1) syncTeamByCode(sg.code, idx);
+                    if (idx !== -1) {
+                        // Обновляем isCreator — он мог быть не задан в старых данных
+                        var nowCreator = (sg.creatorId === userId);
+                        if (myTeams[idx].isCreator !== nowCreator) {
+                            myTeams[idx].isCreator = nowCreator;
+                            changed = true;
+                        }
+                        syncTeamByCode(sg.code, idx);
+                    }
                 }
             });
             if (changed) {
@@ -4384,7 +4477,7 @@ setTimeout(autoSyncUserGroups, 500);
 (function() {
     var hash = window.location.hash; // напр. "#joingroup_ABC123"
     if (hash && hash.indexOf('joingroup_') !== -1) {
-        var code = hash.split('joingroup_')[1].split('&')[0].toUpperCase();
+        var code = hash.split('joingroup_')[1].split(/[?&#]/)[0].toUpperCase();
         if (code && code.length >= 4) {
             // Очищаем хэш из URL сразу
             history.replaceState(null, '', window.location.pathname);
